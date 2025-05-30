@@ -56,7 +56,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${bakbak.className} ${dmSans.className} min-h-screen flex flex-col antialiased`}
+        className={`${bakbak.className} ${dmSans.className} min-h-screen flex flex-col items-center antialiased`}
       >
         <ThemeProvider
           attribute="class"

@@ -51,8 +51,14 @@ export function Header() {
     >
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center">
-          <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">Brandcraft</span>
+          <Link href="/" className="flex items-center gap-2">
+            <div className="flex items-center gap-2 md:gap-3 mr-4 h-8">
+              <img
+                src="/logos/logo-dark.svg"
+                alt="Logo"
+                className="h-full w-auto object-contain"
+              />
+            </div>
           </Link>
         </div>
 
@@ -79,7 +85,7 @@ export function Header() {
             </Link>
           ))}
         </nav>
-        
+
         <div className="flex items-center space-x-2">
           <ModeToggle />
           <Button asChild className="hidden md:flex">
@@ -92,7 +98,11 @@ export function Header() {
             onClick={() => setIsMenuOpen(!isMenuOpen)}
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {isMenuOpen ? (
+              <X className="h-5 w-5" />
+            ) : (
+              <Menu className="h-5 w-5" />
+            )}
           </Button>
         </div>
       </div>
