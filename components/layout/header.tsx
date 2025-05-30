@@ -19,7 +19,6 @@ const navItems: NavItem[] = [
   { label: "Features", href: "/features" },
   { label: "Solutions", href: "/solutions" },
   { label: "Pricing", href: "/pricing" },
-  { label: "Dashboard", href: "/dashboard" },
 ];
 
 export function Header() {
