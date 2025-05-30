@@ -61,16 +61,20 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-6 border-t flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Next.js 15 App. All rights reserved.
+          <p className="text-sm text-muted-foreground mb-4 md:mb-0">
+            © {new Date().getFullYear()} Brandcraft. All rights reserved.
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
+          <div className="flex items-center space-x-6">
             <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Privacy Policy
             </Link>
             <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
               Terms of Service
             </Link>
+            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
+              <span>Powered by</span>
+              <span className="font-semibold text-foreground">Bolt</span>
+            </div>
           </div>
         </div>
       </div>
