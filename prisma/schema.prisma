@@ -1,0 +1,117 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  organization  Organization @relation(fields: [orgId], references: [id])
+  orgId         String
+  role          UserRole  @default(MEMBER)
+  personas      Persona[]
+  campaigns     Campaign[]
+  contents      Content[]
+}
+
+enum UserRole {
+  ADMIN
+  MEMBER
+}
+
+model Organization {
+  id            String    @id @default(cuid())
+  name          String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  users         User[]
+  personas      Persona[]
+  campaigns     Campaign[]
+  contents      Content[]
+}
+
+model Persona {
+  id            String    @id @default(cuid())
+  name          String
+  description   String
+  demographics  Json
+  behaviors     Json
+  preferences   Json
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  organization  Organization @relation(fields: [orgId], references: [id])
+  orgId         String
+  creator       User      @relation(fields: [creatorId], references: [id])
+  creatorId     String
+  campaigns     Campaign[]
+}
+
+model Campaign {
+  id            String    @id @default(cuid())
+  name          String
+  description   String
+  strategy      String    @db.Text
+  status        CampaignStatus @default(DRAFT)
+  startDate     DateTime?
+  endDate       DateTime?
+  budget        Float?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  organization  Organization @relation(fields: [orgId], references: [id])
+  orgId         String
+  creator       User      @relation(fields: [creatorId], references: [id])
+  creatorId     String
+  persona       Persona   @relation(fields: [personaId], references: [id])
+  personaId     String
+  contents      Content[]
+}
+
+enum CampaignStatus {
+  DRAFT
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+model Content {
+  id            String    @id @default(cuid())
+  title         String
+  description   String
+  content       String    @db.Text
+  type          ContentType
+  status        ContentStatus @default(DRAFT)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  organization  Organization @relation(fields: [orgId], references: [id])
+  orgId         String
+  creator       User      @relation(fields: [creatorId], references: [id])
+  creatorId     String
+  campaign      Campaign  @relation(fields: [campaignId], references: [id])
+  campaignId    String
+}
+
+enum ContentType {
+  BLOG_POST
+  SOCIAL_POST
+  EMAIL
+  AD_COPY
+  LANDING_PAGE
+}
+
+enum ContentStatus {
+  DRAFT
+  REVIEW
+  PUBLISHED
+  ARCHIVED
+}
