@@ -13,28 +13,28 @@ import {
 
 const features = [
   {
-    icon: Zap,
-    title: "Lightning Fast",
+    icon: Users,
+    title: "AI Persona Creation",
     description:
-      "Built on Next.js 15 with the App Router for optimal performance and SEO."
+      "Generate detailed customer personas from your existing data, uncovering valuable insights about your audience."
   },
   {
-    icon: Shield,
-    title: "Type Safe",
+    icon: Target,
+    title: "Campaign Strategy",
     description:
-      "Fully typed with TypeScript for better developer experience and fewer bugs."
+      "Create targeted marketing campaigns tailored to each persona, with AI-powered strategy recommendations."
   },
   {
-    icon: Smartphone,
-    title: "Responsive Design",
+    icon: MessageSquare,
+    title: "Content Generation",
     description:
-      "Beautiful on all devices with a mobile-first approach and responsive components."
+      "Generate on-brand content for all your marketing channels, perfectly aligned with your campaign objectives."
   },
   {
-    icon: Layers,
-    title: "Component Library",
+    icon: BarChart,
+    title: "Performance Analytics",
     description:
-      "Built with shadcn/ui components that are accessible, customizable, and reusable."
+      "Track campaign performance and get AI-powered insights to optimize your marketing efforts."
   }
 ];
 

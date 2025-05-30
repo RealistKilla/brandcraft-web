@@ -13,12 +13,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: {
-    template: '%s | Next.js 15 App',
-    default: 'Next.js 15 App',
-  },
-  description: 'A modern Next.js 15 application with a beautiful design and powerful features',
-  keywords: ['next.js', 'react', 'web development', 'app router'],
+  title: { 
+    template: '%s | Brandcraft',
+    default: 'Brandcraft - AI-Powered Marketing Campaign Platform',
+  }, 
+  description: 'Transform your marketing with AI-powered persona creation and campaign generation. Built for agencies and marketing teams.',
+  keywords: ['marketing automation', 'AI marketing', 'persona generation', 'campaign planning', 'content strategy'],
   authors: [{ name: 'Developer' }],
   creator: 'Developer',
 };

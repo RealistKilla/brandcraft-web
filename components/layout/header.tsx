@@ -16,8 +16,9 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "Features", href: "/features" },
+  { label: "Solutions", href: "/solutions" },
+  { label: "Pricing", href: "/pricing" },
   { label: "Dashboard", href: "/dashboard" },
 ];
 
@@ -52,7 +53,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">Next.js 15</span>
+            <span className="font-bold text-xl">Brandcraft</span>
           </Link>
         </div>
 

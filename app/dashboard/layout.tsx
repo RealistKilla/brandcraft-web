@@ -15,18 +15,23 @@ export default function DashboardLayout({
   const routes = [
     {
       href: '/dashboard',
-      label: 'Overview',
+      label: 'Analytics',
       active: pathname === '/dashboard',
     },
     {
-      href: '/dashboard/analytics',
-      label: 'Analytics',
-      active: pathname === '/dashboard/analytics',
+      href: '/dashboard/personas',
+      label: 'Personas',
+      active: pathname === '/dashboard/personas',
     },
     {
-      href: '/dashboard/settings',
-      label: 'Settings',
-      active: pathname === '/dashboard/settings',
+      href: '/dashboard/campaigns',
+      label: 'Campaigns',
+      active: pathname === '/dashboard/campaigns',
+    },
+    {
+      href: '/dashboard/content',
+      label: 'Content',
+      active: pathname === '/dashboard/content',
     },
   ];
 

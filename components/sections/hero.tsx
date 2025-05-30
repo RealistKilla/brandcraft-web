@@ -26,12 +26,14 @@ export function Hero() {
             transition={{ duration: 0.5 }}
             className="space-y-4"
           >
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl">
-              Welcome to Next.js 15
+            <div className="inline-flex items-center space-x-2 rounded-full bg-muted px-3 py-1 text-sm">
+              <span className="text-primary">AI-Powered Marketing</span>
+            </div>
+            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
+              Transform Your Marketing with AI
             </h1>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              A modern application template with a beautiful design and powerful features.
-              Start building your next project with ease.
+              Create data-driven personas, generate targeted campaigns, and produce engaging content - all powered by AI. Built for marketing teams that want to work smarter.
             </p>
           </motion.div>
           <motion.div
@@ -41,10 +43,10 @@ export function Hero() {
             className="flex flex-col sm:flex-row gap-4"
           >
             <Button size="lg" asChild>
-              <Link href="/dashboard">Get Started</Link>
+              <Link href="/dashboard">Start Free Trial</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link href="/about">Learn More</Link>
+              <Link href="/features">See Features</Link>
             </Button>
           </motion.div>
         </div>
