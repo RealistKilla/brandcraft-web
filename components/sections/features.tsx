@@ -8,7 +8,11 @@ import {
   Zap, 
   Shield, 
   Smartphone, 
-  Layers 
+  Layers,
+  Users,
+  Target,
+  MessageSquare,
+  BarChart
 } from "lucide-react";
 
 const features = [
