@@ -115,3 +115,45 @@ enum ContentStatus {
   PUBLISHED
   ARCHIVED
 }
+
+model Application {
+  id            String    @id @default(cuid())
+  name          String
+  applicationId String    @unique @default(cuid())
+  applicationKey String   @unique @default(cuid())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  organization  Organization @relation(fields: [orgId], references: [id])
+  orgId         String
+  creator       User      @relation(fields: [creatorId], references: [id])
+  creatorId     String
+}
+
+// Update existing models to include applications relationship
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  password      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  organization  Organization @relation(fields: [orgId], references: [id])
+  orgId         String
+  role          UserRole  @default(MEMBER)
+  personas      Persona[]
+  campaigns     Campaign[]
+  contents      Content[]
+  applications  Application[]
+}
+
+model Organization {
+  id            String    @id @default(cuid())
+  name          String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  users         User[]
+  personas      Persona[]
+  campaigns     Campaign[]
+  contents      Content[]
+  applications  Application[]
+}
