@@ -15,8 +15,13 @@ export default function DashboardLayout({
   const routes = [
     {
       href: '/dashboard',
-      label: 'Analytics',
+      label: 'Overview',
       active: pathname === '/dashboard',
+    },
+    {
+      href: '/dashboard/analytics',
+      label: 'Analytics',
+      active: pathname === '/dashboard/analytics',
     },
     {
       href: '/dashboard/personas',
@@ -32,6 +37,16 @@ export default function DashboardLayout({
       href: '/dashboard/content',
       label: 'Content',
       active: pathname === '/dashboard/content',
+    },
+    {
+      href: '/dashboard/applications',
+      label: 'Applications',
+      active: pathname === '/dashboard/applications',
+    },
+    {
+      href: '/dashboard/settings',
+      label: 'Settings',
+      active: pathname === '/dashboard/settings',
     },
   ];
 

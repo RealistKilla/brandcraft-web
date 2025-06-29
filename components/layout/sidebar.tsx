@@ -8,8 +8,8 @@ import {
   Settings, 
   Users, 
   FileText, 
-  ShoppingCart, 
-  MessageSquare, 
+  Target,
+  Grid3X3,
   LogOut 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -34,14 +34,14 @@ const sidebarItems: SidebarItem[] = [
     icon: BarChart,
   },
   {
-    title: "Customers",
-    href: "/dashboard/customers",
+    title: "Personas",
+    href: "/dashboard/personas",
     icon: Users,
   },
   {
-    title: "Products",
-    href: "/dashboard/products",
-    icon: ShoppingCart,
+    title: "Campaigns",
+    href: "/dashboard/campaigns",
+    icon: Target,
   },
   {
     title: "Content",
@@ -49,9 +49,9 @@ const sidebarItems: SidebarItem[] = [
     icon: FileText,
   },
   {
-    title: "Messages",
-    href: "/dashboard/messages",
-    icon: MessageSquare,
+    title: "Applications",
+    href: "/dashboard/applications",
+    icon: Grid3X3,
   },
   {
     title: "Settings",
