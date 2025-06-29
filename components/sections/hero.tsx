@@ -1,70 +1,82 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import React from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 
 export function Hero() {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
-    <section className="w-full py-16 md:py-24 lg:py-32">
-      <div className="container px-4 md:px-6">
-        <div className="flex flex-col items-center space-y-8 text-center">
-          <motion.div
+    <section className="relative pt-28 md:pt-36 lg:pt-40 pb-16 md:pb-20 lg:pb-24 overflow-hidden">
+      {/* Background gradient */}
+      <div
+        className="absolute inset-0 pointer-events-none bg-gradient-to-b from-background via-background to-background/0 dark:from-background dark:via-background/80 dark:to-background/0"
+        aria-hidden="true"
+      />
+      {/* Background decoration */}
+      <div className="absolute top-0 left-0 right-0 h-screen bg-[radial-gradient(circle_500px_at_50%_200px,hsl(var(--hue)_100%_50%_/0.1),transparent)] animate-hue-shift " />
+
+      <div className="container mx-auto px-4 md:px-6 relative">
+        <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
+          <motion.h1
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight md:leading-tight"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="space-y-4"
+            transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <div className="inline-flex items-center space-x-2 rounded-full bg-muted px-3 py-1 text-sm">
-              <span className="text-primary">AI-Powered Marketing</span>
-            </div>
-            <h1 className="text-4xl font-bold tracking-tighter sm:text-5xl md:text-6xl lg:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/70">
-              Transform Your Marketing with AI
-            </h1>
-            <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              Create data-driven personas, generate targeted campaigns, and produce engaging content - all powered by AI. Built for marketing teams that want to work smarter.
-            </p>
+            Transform Your{" "}
+            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500">
+              Marketing
+            </span>{" "}
+            with Artificial Intelligence
+          </motion.h1>
+
+          <motion.p
+            className="mt-6 text-xl text-muted-foreground max-w-2xl"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 }}
+          >
+            Create tailored social media posts, marketing strategies, and
+            content that resonates with your target audience—all with the power
+            of artificial intelligence.
+          </motion.p>
+
+          <motion.div
+            className="flex flex-col sm:flex-row gap-4 mt-10"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.6 }}
+          >
+            <Button size="lg" className="h-12 px-8 font-medium rounded-full">
+              Get Started <ArrowRight className="ml-2 h-4 w-4" />
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              className="h-12 px-8 font-medium rounded-full"
+            >
+              Watch Demo
+            </Button>
           </motion.div>
+
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2, duration: 0.5 }}
-            className="flex flex-col sm:flex-row gap-4"
+            className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.5, delay: 1 }}
           >
-            <Button size="lg" asChild>
-              <Link href="/dashboard">Start Free Trial</Link>
-            </Button>
-            <Button size="lg" variant="outline" asChild>
-              <Link href="/features">See Features</Link>
-            </Button>
+            {["Twitter", "Instagram", "Facebook", "LinkedIn"].map(
+              (platform) => (
+                <div key={platform} className="flex flex-col items-center">
+                  <p className="text-base font-medium text-muted-foreground">
+                    {platform}
+                  </p>
+                </div>
+              )
+            )}
           </motion.div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 40 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4, duration: 0.7 }}
-          className="mt-16 flex justify-center"
-        >
-          <div className="relative w-full max-w-4xl overflow-hidden rounded-lg border bg-background shadow-xl">
-            <div className="p-1 bg-gradient-to-r from-primary/20 via-primary/10 to-primary/20">
-              <div className="h-[300px] md:h-[400px] lg:h-[500px] bg-muted flex items-center justify-center">
-                <p className="text-muted-foreground">Application Preview</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
       </div>
     </section>
   );

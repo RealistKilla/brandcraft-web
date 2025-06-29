@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Icons } from "@/components/icons";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -11,7 +12,8 @@ export function Footer() {
               <span className="font-bold text-xl">Next.js 15</span>
             </Link>
             <p className="mt-4 text-muted-foreground">
-              A modern Next.js 15 application with a beautiful design and powerful features.
+              A modern Next.js 15 application with a beautiful design and
+              powerful features.
             </p>
           </div>
 
@@ -19,22 +21,34 @@ export function Footer() {
             <h3 className="font-medium text-base mb-3">Quick Links</h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Home
                 </Link>
               </li>
               <li>
-                <Link href="/about" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/about"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   About
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/contact"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Contact
                 </Link>
               </li>
               <li>
-                <Link href="/dashboard" className="text-muted-foreground hover:text-foreground transition-colors">
+                <Link
+                  href="/dashboard"
+                  className="text-muted-foreground hover:text-foreground transition-colors"
+                >
                   Dashboard
                 </Link>
               </li>
@@ -44,15 +58,24 @@ export function Footer() {
           <div>
             <h3 className="font-medium text-base mb-3">Follow Us</h3>
             <div className="flex space-x-4">
-              <Link href="#" className="text-muted-foreground hover:text-foreground">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Icons.twitter className="h-5 w-5" />
                 <span className="sr-only">Twitter</span>
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-foreground">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Icons.github className="h-5 w-5" />
                 <span className="sr-only">GitHub</span>
               </Link>
-              <Link href="#" className="text-muted-foreground hover:text-foreground">
+              <Link
+                href="#"
+                className="text-muted-foreground hover:text-foreground"
+              >
                 <Icons.linkedin className="h-5 w-5" />
                 <span className="sr-only">LinkedIn</span>
               </Link>
@@ -65,15 +88,27 @@ export function Footer() {
             © {new Date().getFullYear()} Brandcraft. All rights reserved.
           </p>
           <div className="flex items-center space-x-6">
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Privacy Policy
             </Link>
-            <Link href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+            <Link
+              href="#"
+              className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+            >
               Terms of Service
             </Link>
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <span>Powered by</span>
-              <span className="font-semibold text-foreground">Bolt</span>
+              <div className=" h-16 w-16 relative">
+                <Image
+                  src="/logos/bolt-dark.png"
+                  alt="Logo"
+                  layout="fill"
+                  objectFit="contain"
+                />
+              </div>
             </div>
           </div>
         </div>
