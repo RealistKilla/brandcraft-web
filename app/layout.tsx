@@ -67,7 +67,7 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Header />
-            <main className="flex-1">{children}</main>
+            <main className="min-h-screen w-screen">{children}</main>
             <Footer />
             <Toaster />
           </AuthProvider>

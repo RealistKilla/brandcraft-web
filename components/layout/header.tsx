@@ -52,7 +52,7 @@ export function Header() {
       )}
     >
       <div className="container flex h-16 items-center justify-between">
-        <div className="flex items-center">
+        <div className="pl-4 flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex items-center gap-2 md:gap-3 mr-4 h-8">
               <img

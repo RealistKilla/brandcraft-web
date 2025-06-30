@@ -4,17 +4,21 @@ import Image from "next/image";
 
 export function Footer() {
   return (
-    <footer className="border-t">
+    <footer className="w-full border-t">
       <div className="container py-8 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="md:col-span-2">
-            <Link href="/" className="flex items-center space-x-2">
-              <span className="font-bold text-xl">Next.js 15</span>
-            </Link>
-            <p className="mt-4 text-muted-foreground">
-              A modern Next.js 15 application with a beautiful design and
-              powerful features.
-            </p>
+            <div className="flex items-center ml-4">
+              <Link href="/" className="flex items-center gap-2">
+                <div className="flex items-center gap-2 md:gap-3 mr-4 h-8">
+                  <img
+                    src="/logos/logo-dark.svg"
+                    alt="Logo"
+                    className="h-full w-auto object-contain"
+                  />
+                </div>
+              </Link>
+            </div>
           </div>
 
           <div>
@@ -84,7 +88,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 pt-6 border-t flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground mb-4 md:mb-0">
+          <p className="ml-4 text-sm text-muted-foreground mb-4 md:mb-0">
             © {new Date().getFullYear()} Brandcraft. All rights reserved.
           </p>
           <div className="flex items-center space-x-6">
