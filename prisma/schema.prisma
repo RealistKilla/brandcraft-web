@@ -8,38 +8,16 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
 }
 
-model User {
-  id            String    @id @default(cuid())
-  name          String
-  email         String    @unique
-  password      String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  organization  Organization @relation(fields: [orgId], references: [id])
-  orgId         String
-  role          UserRole  @default(MEMBER)
-  personas      Persona[]
-  campaigns     Campaign[]
-  contents      Content[]
-}
+
 
 enum UserRole {
   ADMIN
   MEMBER
 }
 
-model Organization {
-  id            String    @id @default(cuid())
-  name          String
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
-  users         User[]
-  personas      Persona[]
-  campaigns     Campaign[]
-  contents      Content[]
-}
 
 model Persona {
   id            String    @id @default(cuid())
@@ -129,7 +107,6 @@ model Application {
   creatorId     String
 }
 
-// Update existing models to include applications relationship
 model User {
   id            String    @id @default(cuid())
   name          String
@@ -144,11 +121,14 @@ model User {
   campaigns     Campaign[]
   contents      Content[]
   applications  Application[]
+
+  @@map("users")
 }
+
 
 model Organization {
   id            String    @id @default(cuid())
-  name          String
+  name          String    @default("Basic User")
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   users         User[]
@@ -156,4 +136,14 @@ model Organization {
   campaigns     Campaign[]
   contents      Content[]
   applications  Application[]
+
+  @@map("organizations")
+}
+
+model Industries {
+  id          BigInt      @id @default(autoincrement()) @db.BigInt   
+  createdAt   DateTime    @default(now())              @map("created_at") @db.Timestamptz(6)
+  industry    String                                    @db.Text
+
+  @@map("industries")   
 }
