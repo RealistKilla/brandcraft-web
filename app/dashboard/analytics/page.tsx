@@ -11,7 +11,7 @@ import { DemographicsChart } from '@/components/dashboard/demographics-chart';
 import { RecentUsersTable } from '@/components/dashboard/recent-users-table';
 import { api, ApiError } from '@/lib/api';
 import { toast } from '@/hooks/use-toast';
-import { Users, DollarSign, TrendingUp, Activity } from 'lucide-react';
+import { Users, DollarSign, TrendingUp, Activity, Brain, Sparkles } from 'lucide-react';
 
 interface Application {
   id: string;
@@ -55,6 +55,7 @@ export default function AnalyticsPage() {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
   const [isLoadingApps, setIsLoadingApps] = useState(true);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
+  const [isGeneratingPersona, setIsGeneratingPersona] = useState(false);
 
   // Fetch applications on component mount
   useEffect(() => {
@@ -112,6 +113,46 @@ export default function AnalyticsPage() {
       });
     } finally {
       setIsLoadingAnalytics(false);
+    }
+  };
+
+  const handleGeneratePersona = async () => {
+    if (!selectedApplication) {
+      toast({
+        title: "Error",
+        description: "Please select an application first.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingPersona(true);
+
+    try {
+      const response = await api.personas.generate({
+        applicationId: selectedApplication,
+      });
+
+      toast({
+        title: "Persona Generated!",
+        description: `"${response.data.name}" has been created based on your analytics data.`,
+      });
+    } catch (error) {
+      console.error('Failed to generate persona:', error);
+      
+      let errorMessage = "Failed to generate persona. Please try again.";
+      
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+      }
+      
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingPersona(false);
     }
   };
 
@@ -200,6 +241,25 @@ export default function AnalyticsPage() {
             ))}
           </SelectContent>
         </Select>
+        {selectedApplication && analyticsData && (
+          <Button 
+            onClick={handleGeneratePersona}
+            disabled={isGeneratingPersona}
+            className="flex items-center gap-2"
+          >
+            {isGeneratingPersona ? (
+              <>
+                <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="h-4 w-4" />
+                Generate AI Persona
+              </>
+            )}
+          </Button>
+        )}
       </div>
 
       {isLoadingAnalytics ? (

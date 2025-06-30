@@ -85,6 +85,13 @@ export const api = {
     getData: (applicationId: string) => 
       apiRequest(`/analytics?applicationId=${applicationId}`),
   },
+  personas: {
+    generate: (data: { applicationId: string }) =>
+      apiRequest('/generate-persona', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  },
   dashboard: {
     getOverview: () => apiRequest('/dashboard/overview'),
   },
