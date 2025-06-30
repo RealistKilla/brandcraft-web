@@ -12,6 +12,9 @@ import { Plus, Target, Calendar, DollarSign, TrendingUp, Users, FileText, Sparkl
 import { toast } from '@/hooks/use-toast';
 import { api, ApiError } from '@/lib/api';
 import { format } from 'date-fns';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Checkbox } from '@/components/ui/checkbox';
 
 interface Campaign {
   id: string;
@@ -67,6 +70,20 @@ export default function CampaignsPage() {
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [selectedPersonaId, setSelectedPersonaId] = useState<string>('');
+  const [isContentModalOpen, setIsContentModalOpen] = useState(false);
+  const [isGeneratingContent, setIsGeneratingContent] = useState(false);
+  const [contentTitle, setContentTitle] = useState('');
+  const [additionalContext, setAdditionalContext] = useState('');
+  const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
+
+  const availablePlatforms = [
+    { id: 'instagram', name: 'Instagram', description: 'Visual-first social platform' },
+    { id: 'twitter', name: 'Twitter/X', description: 'Real-time conversation platform' },
+    { id: 'linkedin', name: 'LinkedIn', description: 'Professional networking platform' },
+    { id: 'facebook', name: 'Facebook', description: 'Community-focused social platform' },
+    { id: 'tiktok', name: 'TikTok', description: 'Short-form video platform' },
+    { id: 'youtube', name: 'YouTube', description: 'Video content platform' },
+  ];
 
   useEffect(() => {
     fetchCampaigns();
@@ -146,6 +163,68 @@ export default function CampaignsPage() {
   const handleViewCampaign = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
     setIsViewModalOpen(true);
+  };
+
+  const handleGenerateContent = (campaign: Campaign) => {
+    setSelectedCampaign(campaign);
+    setContentTitle('');
+    setAdditionalContext('');
+    setSelectedPlatforms([]);
+    setIsContentModalOpen(true);
+  };
+
+  const handleContentGeneration = async () => {
+    if (!selectedCampaign || !contentTitle.trim() || selectedPlatforms.length === 0) {
+      toast({
+        title: "Error",
+        description: "Please provide a title and select at least one platform.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsGeneratingContent(true);
+
+    try {
+      const response = await api.content.generate({
+        campaignId: selectedCampaign.id,
+        title: contentTitle.trim(),
+        platforms: selectedPlatforms,
+        additionalContext: additionalContext.trim(),
+      });
+
+      toast({
+        title: "Content Generated!",
+        description: `Created ${response.data.contentCount} pieces of content for ${selectedPlatforms.length} platforms.`,
+      });
+      
+      setIsContentModalOpen(false);
+      setSelectedCampaign(null);
+    } catch (error) {
+      console.error('Generate content error:', error);
+      
+      let errorMessage = "Failed to generate content. Please try again.";
+      
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+      }
+      
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingContent(false);
+    }
+  };
+
+  const handlePlatformToggle = (platformId: string) => {
+    setSelectedPlatforms(prev => 
+      prev.includes(platformId) 
+        ? prev.filter(id => id !== platformId)
+        : [...prev, platformId]
+    );
   };
 
   const formatCurrency = (amount: number | null) => {
@@ -501,9 +580,128 @@ export default function CampaignsPage() {
             <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
               Close
             </Button>
-            <Button disabled>
+            <Button onClick={() => handleGenerateContent(selectedCampaign)}>
               <Sparkles className="h-4 w-4 mr-2" />
               Generate Content
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Content Generation Modal */}
+      <Dialog open={isContentModalOpen} onOpenChange={setIsContentModalOpen}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="h-5 w-5" />
+              Generate Content for "{selectedCampaign?.name}"
+            </DialogTitle>
+            <DialogDescription>
+              Create platform-specific content based on your campaign strategy and target persona.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-6 py-4">
+            <div>
+              <Label htmlFor="contentTitle" className="text-sm font-medium">
+                Content Title/Theme
+              </Label>
+              <Input
+                id="contentTitle"
+                placeholder="e.g., New Product Launch, Summer Sale, Industry Insights"
+                value={contentTitle}
+                onChange={(e) => setContentTitle(e.target.value)}
+                className="mt-1"
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                This will be the main theme or focus of your content across all platforms.
+              </p>
+            </div>
+
+            <div>
+              <Label className="text-sm font-medium mb-3 block">
+                Select Platforms
+              </Label>
+              <div className="grid grid-cols-2 gap-3">
+                {availablePlatforms.map((platform) => (
+                  <div
+                    key={platform.id}
+                    className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      selectedPlatforms.includes(platform.id)
+                        ? 'border-primary bg-primary/5'
+                        : 'border-border hover:border-primary/50'
+                    }`}
+                    onClick={() => handlePlatformToggle(platform.id)}
+                  >
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        checked={selectedPlatforms.includes(platform.id)}
+                        onChange={() => {}} // Handled by parent click
+                      />
+                      <div>
+                        <p className="font-medium text-sm">{platform.name}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {platform.description}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">
+                Content will be optimized for each platform's format and audience.
+              </p>
+            </div>
+
+            <div>
+              <Label htmlFor="additionalContext" className="text-sm font-medium">
+                Additional Context (Optional)
+              </Label>
+              <Textarea
+                id="additionalContext"
+                placeholder="Any specific requirements, key messages, or additional context for the content..."
+                value={additionalContext}
+                onChange={(e) => setAdditionalContext(e.target.value)}
+                className="mt-1"
+                rows={3}
+              />
+              <p className="text-xs text-muted-foreground mt-1">
+                Provide any specific requirements or key messages to include.
+              </p>
+            </div>
+
+            {selectedCampaign && (
+              <div className="p-4 bg-muted rounded-lg">
+                <h4 className="font-medium text-sm mb-2">Campaign Context</h4>
+                <p className="text-sm text-muted-foreground mb-1">
+                  <strong>Target Persona:</strong> {selectedCampaign.persona.name}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  <strong>Campaign:</strong> {selectedCampaign.description}
+                </p>
+              </div>
+            )}
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsContentModalOpen(false)}>
+              Cancel
+            </Button>
+            <Button 
+              onClick={handleContentGeneration} 
+              disabled={isGeneratingContent || !contentTitle.trim() || selectedPlatforms.length === 0}
+            >
+              {isGeneratingContent ? (
+                <>
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Content
+                </>
+              )}
             </Button>
           </DialogFooter>
         </DialogContent>
