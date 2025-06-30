@@ -1,13 +1,12 @@
 'use client';
 
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { Sidebar } from '@/components/layout/sidebar';
+import { useAuth } from '@/components/providers/auth-provider';
 import { cn } from '@/lib/utils';
-import { createClient } from '@/lib/supabase/client';
-import type { User } from '@supabase/supabase-js';
 
 export default function DashboardLayout({
   children,
@@ -16,35 +15,13 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClient();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
-      setLoading(false);
-      
-      if (!user) {
-        router.push('/auth/signin');
-      }
-    };
-
-    getUser();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
-        if (event === 'SIGNED_OUT' || !session) {
-          router.push('/auth/signin');
-        } else if (session) {
-          setUser(session.user);
-        }
-      }
-    );
-
-    return () => subscription.unsubscribe();
-  }, [router, supabase.auth]);
+    if (!loading && !user) {
+      router.push('/auth/signin');
+    }
+  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -101,7 +78,7 @@ export default function DashboardLayout({
 
   return (
     <div className="flex min-h-screen">
-      <Sidebar user={user} />
+      <Sidebar />
       <div className="flex-1">
         <div className="border-b">
           <div className="container flex h-16 items-center px-4">

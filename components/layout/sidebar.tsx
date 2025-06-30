@@ -19,13 +19,9 @@ import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { createClient } from "@/lib/supabase/client";
+import { api } from "@/lib/api";
+import { useAuth } from "@/components/providers/auth-provider";
 import { toast } from "@/hooks/use-toast";
-import type { User } from "@supabase/supabase-js";
-
-interface SidebarProps {
-  user: User;
-}
 
 interface SidebarItem {
   title: string;
@@ -71,17 +67,17 @@ const sidebarItems: SidebarItem[] = [
   },
 ];
 
-export function Sidebar({ user }: SidebarProps) {
+export function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, setUser } = useAuth();
   const [isSigningOut, setIsSigningOut] = useState(false);
-  const supabase = createClient();
 
   const handleSignOut = async () => {
     setIsSigningOut(true);
     try {
-      const { error } = await supabase.auth.signOut();
-      if (error) throw error;
+      await api.auth.signOut();
+      setUser(null);
       
       toast({
         title: "Signed out",
@@ -100,6 +96,10 @@ export function Sidebar({ user }: SidebarProps) {
       setIsSigningOut(false);
     }
   };
+
+  if (!user) {
+    return null;
+  }
 
   return (
     <div className="hidden md:flex h-screen border-r flex-col w-64">
@@ -134,13 +134,12 @@ export function Sidebar({ user }: SidebarProps) {
         <div className="flex items-center gap-3 mb-4 p-2">
           <Avatar className="h-8 w-8">
             <AvatarFallback>
-              {user.user_metadata?.full_name?.charAt(0)?.toUpperCase() || 
-               user.email?.charAt(0)?.toUpperCase() || 'U'}
+              {user.name?.charAt(0)?.toUpperCase() || 'U'}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">
-              {user.user_metadata?.full_name || 'User'}
+              {user.name || 'User'}
             </p>
             <p className="text-xs text-muted-foreground truncate">
               {user.email}

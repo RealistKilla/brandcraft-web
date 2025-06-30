@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { createClient } from "@/lib/supabase/client";
+import { api, ApiError } from "@/lib/api";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -30,7 +30,6 @@ const formSchema = z.object({
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
-  const supabase = createClient();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,14 +43,10 @@ export function SignInForm() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const response = await api.auth.signIn({
         email: values.email,
         password: values.password,
       });
-
-      if (error) {
-        throw error;
-      }
 
       toast({
         title: "Success",
@@ -61,9 +56,16 @@ export function SignInForm() {
       router.push("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);
+      
+      let errorMessage = "Invalid email or password.";
+      
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Invalid email or password.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {

@@ -15,7 +15,8 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
-import { createClient } from "@/lib/supabase/client";
+import { api, ApiError } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   name: z.string().min(2, {
@@ -35,7 +36,7 @@ const formSchema = z.object({
 
 export function SignUpForm() {
   const [isLoading, setIsLoading] = useState(false);
-  const supabase = createClient();
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -51,31 +52,31 @@ export function SignUpForm() {
     setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const response = await api.auth.signUp({
+        name: values.name,
         email: values.email,
         password: values.password,
-        options: {
-          data: {
-            full_name: values.name,
-          },
-        },
       });
-
-      if (error) {
-        throw error;
-      }
 
       toast({
         title: "Success",
-        description: "Please check your email to verify your account.",
+        description: "Your account has been created successfully!",
       });
       
-      form.reset();
+      // Redirect to dashboard after successful signup
+      router.push("/dashboard");
     } catch (error) {
       console.error("Sign up error:", error);
+      
+      let errorMessage = "Something went wrong. Please try again.";
+      
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: error instanceof Error ? error.message : "Something went wrong. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
