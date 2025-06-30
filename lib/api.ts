@@ -73,6 +73,14 @@ export const api = {
     
     getUser: () => apiRequest('/auth/me'),
   },
+  applications: {
+    getAll: () => apiRequest('/applications'),
+    create: (data: { name: string }) =>
+      apiRequest('/applications', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  },
 };
 
 export { ApiError };

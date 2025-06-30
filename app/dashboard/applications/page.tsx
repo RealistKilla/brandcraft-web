@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -10,6 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Plus, Grid3X3, Key, Copy, Eye, EyeOff } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { api, ApiError } from '@/lib/api';
 
 interface Application {
   id: string;
@@ -17,6 +18,10 @@ interface Application {
   applicationId: string;
   applicationKey: string;
   createdAt: string;
+  creator: {
+    name: string;
+    email: string;
+  };
 }
 
 export default function ApplicationsPage() {
@@ -27,13 +32,28 @@ export default function ApplicationsPage() {
   const [newAppName, setNewAppName] = useState('');
   const [showKey, setShowKey] = useState(false);
   const [isCreating, setIsCreating] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const generateId = () => {
-    return 'app_' + Math.random().toString(36).substr(2, 16);
-  };
+  // Fetch applications on component mount
+  useEffect(() => {
+    fetchApplications();
+  }, []);
 
-  const generateKey = () => {
-    return 'sk_' + Math.random().toString(36).substr(2, 32);
+  const fetchApplications = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.applications.getAll();
+      setApplications(response.data || []);
+    } catch (error) {
+      console.error('Failed to fetch applications:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load applications. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCreateApplication = async () => {
@@ -49,29 +69,31 @@ export default function ApplicationsPage() {
     setIsCreating(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      const newApp: Application = {
-        id: Math.random().toString(36).substr(2, 9),
+      const response = await api.applications.create({
         name: newAppName.trim(),
-        applicationId: generateId(),
-        applicationKey: generateKey(),
-        createdAt: new Date().toISOString(),
-      };
+      });
 
-      setApplications(prev => [...prev, newApp]);
+      // Add the new application to the list
+      setApplications(prev => [response.data, ...prev]);
       setNewAppName('');
       setIsCreateModalOpen(false);
       
       toast({
         title: "Application created",
-        description: `${newApp.name} has been created successfully.`,
+        description: `${response.data.name} has been created successfully.`,
       });
     } catch (error) {
+      console.error('Create application error:', error);
+      
+      let errorMessage = "Failed to create application. Please try again.";
+      
+      if (error instanceof ApiError) {
+        errorMessage = error.message;
+      }
+      
       toast({
         title: "Error",
-        description: "Failed to create application. Please try again.",
+        description: errorMessage,
         variant: "destructive",
       });
     } finally {
@@ -104,98 +126,131 @@ export default function ApplicationsPage() {
         </div>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Create Application Card */}
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogTrigger asChild>
-            <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer transition-colors">
-              <CardContent className="flex flex-col items-center justify-center p-8 text-center">
-                <div className="rounded-full bg-muted p-4 mb-4">
-                  <Plus className="h-8 w-8 text-muted-foreground" />
+      {isLoading ? (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {[...Array(3)].map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-muted w-9 h-9"></div>
+                    <div>
+                      <div className="h-5 bg-muted rounded w-32 mb-2"></div>
+                      <div className="h-4 bg-muted rounded w-24"></div>
+                    </div>
+                  </div>
+                  <div className="h-6 bg-muted rounded w-16"></div>
                 </div>
-                <h3 className="text-lg font-semibold mb-2">Create Application</h3>
-                <p className="text-sm text-muted-foreground">
-                  Create a new API application to get started
-                </p>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <div className="h-4 bg-muted rounded w-24"></div>
+                    <div className="h-6 bg-muted rounded w-20"></div>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <div className="h-4 bg-muted rounded w-16"></div>
+                    <div className="h-6 bg-muted rounded w-24"></div>
+                  </div>
+                </div>
               </CardContent>
             </Card>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Create New Application</DialogTitle>
-              <DialogDescription>
-                Create a new API application. You'll receive an application ID and API key for integration.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="appName">Application Name</Label>
-                <Input
-                  id="appName"
-                  placeholder="My Application"
-                  value={newAppName}
-                  onChange={(e) => setNewAppName(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter') {
-                      handleCreateApplication();
-                    }
-                  }}
-                />
+          ))}
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Create Application Card */}
+          <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+            <DialogTrigger asChild>
+              <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer transition-colors">
+                <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+                  <div className="rounded-full bg-muted p-4 mb-4">
+                    <Plus className="h-8 w-8 text-muted-foreground" />
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">Create Application</h3>
+                  <p className="text-sm text-muted-foreground">
+                    Create a new API application to get started
+                  </p>
+                </CardContent>
+              </Card>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Create New Application</DialogTitle>
+                <DialogDescription>
+                  Create a new API application. You'll receive an application ID and API key for integration.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="appName">Application Name</Label>
+                  <Input
+                    id="appName"
+                    placeholder="My Application"
+                    value={newAppName}
+                    onChange={(e) => setNewAppName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        handleCreateApplication();
+                      }
+                    }}
+                  />
+                </div>
               </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreateApplication} disabled={isCreating}>
-                {isCreating ? "Creating..." : "Create Application"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+              <DialogFooter>
+                <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleCreateApplication} disabled={isCreating}>
+                  {isCreating ? "Creating..." : "Create Application"}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
 
-        {/* Application Cards */}
-        {applications.map((app) => (
-          <Card 
-            key={app.id} 
-            className="cursor-pointer hover:shadow-md transition-shadow"
-            onClick={() => handleViewDetails(app)}
-          >
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Grid3X3 className="h-5 w-5 text-primary" />
+          {/* Application Cards */}
+          {applications.map((app) => (
+            <Card 
+              key={app.id} 
+              className="cursor-pointer hover:shadow-md transition-shadow"
+              onClick={() => handleViewDetails(app)}
+            >
+              <CardHeader>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Grid3X3 className="h-5 w-5 text-primary" />
+                    </div>
+                    <div>
+                      <CardTitle className="text-lg">{app.name}</CardTitle>
+                      <CardDescription className="text-sm">
+                        Created {new Date(app.createdAt).toLocaleDateString()}
+                      </CardDescription>
+                    </div>
                   </div>
-                  <div>
-                    <CardTitle className="text-lg">{app.name}</CardTitle>
-                    <CardDescription className="text-sm">
-                      Created {new Date(app.createdAt).toLocaleDateString()}
-                    </CardDescription>
+                  <Badge variant="secondary">Active</Badge>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">Application ID:</span>
+                    <code className="text-xs bg-muted px-2 py-1 rounded">
+                      {app.applicationId.substring(0, 12)}...
+                    </code>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-muted-foreground">API Key:</span>
+                    <code className="text-xs bg-muted px-2 py-1 rounded">
+                      sk_••••••••••••••••
+                    </code>
                   </div>
                 </div>
-                <Badge variant="secondary">Active</Badge>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">Application ID:</span>
-                  <code className="text-xs bg-muted px-2 py-1 rounded">
-                    {app.applicationId.substring(0, 12)}...
-                  </code>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-muted-foreground">API Key:</span>
-                  <code className="text-xs bg-muted px-2 py-1 rounded">
-                    sk_••••••••••••••••
-                  </code>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      )}
 
       {applications.length === 0 && (
         <div className="text-center py-12">
@@ -277,6 +332,13 @@ export default function ApplicationsPage() {
                   <Label className="text-sm font-medium">Created</Label>
                   <div className="mt-1 p-3 bg-muted rounded-md">
                     {new Date(selectedApp.createdAt).toLocaleString()}
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="text-sm font-medium">Created By</Label>
+                  <div className="mt-1 p-3 bg-muted rounded-md">
+                    {selectedApp.creator.name} ({selectedApp.creator.email})
                   </div>
                 </div>
               </div>
