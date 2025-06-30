@@ -85,11 +85,11 @@ export function SignInForm() {
                   <Input
                     placeholder="Email Address"
                     type="email"
-                    className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                    className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                     {...field}
                   />
                   {form.formState.errors.email && (
-                    <p className="text-xs text-red-500 mt-1 italic">
+                    <p className="text-xs text-destructive mt-1 italic">
                       {form.formState.errors.email.message}
                     </p>
                   )}
@@ -109,11 +109,11 @@ export function SignInForm() {
                   <Input
                     placeholder="Password"
                     type="password"
-                    className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                    className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                     {...field}
                   />
                   {form.formState.errors.password && (
-                    <p className="text-xs text-red-500 mt-1 italic">
+                    <p className="text-xs text-destructive mt-1 italic">
                       {form.formState.errors.password.message}
                     </p>
                   )}
@@ -125,7 +125,7 @@ export function SignInForm() {
         
         <Button 
           type="submit" 
-          className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-medium" 
+          className="w-full py-3 rounded-lg font-medium" 
           disabled={isLoading}
         >
           {isLoading ? "Signing in..." : "Sign In"}

@@ -10,7 +10,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -123,10 +122,10 @@ export function SignUpFlow() {
             transition={{ duration: 0.3 }}
           >
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <h1 className="text-3xl font-bold tracking-tight mb-2">
                 What will you be using Brandcraft for?
               </h1>
-              <p className="text-gray-600">
+              <p className="text-muted-foreground">
                 This allows us to correctly set up your Brandcraft account.
               </p>
             </div>
@@ -139,23 +138,23 @@ export function SignUpFlow() {
                   render={({ field }) => (
                     <FormItem>
                       <FormControl>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 gap-4">
                           <button
                             type="button"
                             onClick={() => field.onChange("individual")}
                             className={`p-6 rounded-xl border-2 transition-all duration-200 text-left ${
                               field.value === "individual"
-                                ? "border-green-500 bg-green-50"
-                                : "border-gray-200 hover:border-gray-300"
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/50"
                             }`}
                           >
-                            <div className="flex flex-col items-center text-center space-y-3">
-                              <div className="p-3 rounded-lg bg-blue-100">
-                                <Building2 className="h-8 w-8 text-blue-600" />
+                            <div className="flex items-center space-x-4">
+                              <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/20">
+                                <Building2 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                               </div>
-                              <div>
-                                <h3 className="font-semibold text-gray-900">Small business</h3>
-                                <p className="text-sm text-gray-600 mt-1">
+                              <div className="flex-1">
+                                <h3 className="font-semibold">Small business</h3>
+                                <p className="text-sm text-muted-foreground mt-1">
                                   You're here if you're operating from a single branch with low volumes.
                                 </p>
                               </div>
@@ -167,17 +166,17 @@ export function SignUpFlow() {
                             onClick={() => field.onChange("organization")}
                             className={`p-6 rounded-xl border-2 transition-all duration-200 text-left ${
                               field.value === "organization"
-                                ? "border-green-500 bg-green-50"
-                                : "border-gray-200 hover:border-gray-300"
+                                ? "border-primary bg-primary/5"
+                                : "border-border hover:border-primary/50"
                             }`}
                           >
-                            <div className="flex flex-col items-center text-center space-y-3">
-                              <div className="p-3 rounded-lg bg-purple-100">
-                                <User className="h-8 w-8 text-purple-600" />
+                            <div className="flex items-center space-x-4">
+                              <div className="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/20">
+                                <User className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                               </div>
-                              <div>
-                                <h3 className="font-semibold text-gray-900">Large company</h3>
-                                <p className="text-sm text-gray-600 mt-1">
+                              <div className="flex-1">
+                                <h3 className="font-semibold">Large company</h3>
+                                <p className="text-sm text-muted-foreground mt-1">
                                   You're here if you're a branch of a larger company.
                                 </p>
                               </div>
@@ -192,7 +191,7 @@ export function SignUpFlow() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-medium"
+                  className="w-full py-3 rounded-lg font-medium"
                   disabled={!accountTypeForm.watch("accountType")}
                 >
                   Continue
@@ -213,21 +212,21 @@ export function SignUpFlow() {
             <div className="mb-6">
               <button
                 onClick={goBack}
-                className="flex items-center text-gray-600 hover:text-gray-900 transition-colors mb-4"
+                className="flex items-center text-muted-foreground hover:text-foreground transition-colors mb-4"
               >
                 <ArrowLeft className="h-4 w-4 mr-2" />
                 Back
               </button>
               <div className="text-center">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">Register</h1>
-                <p className="text-gray-600">
+                <h1 className="text-3xl font-bold tracking-tight mb-2">Register</h1>
+                <p className="text-muted-foreground">
                   Welcome to Brandcraft! Let's get started by creating your account.
                 </p>
               </div>
             </div>
 
             <div className="mb-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Personal Information</h2>
+              <h2 className="text-lg font-semibold mb-4">Personal Information</h2>
             </div>
 
             <Form {...registrationForm}>
@@ -242,11 +241,11 @@ export function SignUpFlow() {
                           <div className="relative">
                             <Input
                               placeholder="Name"
-                              className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                              className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                               {...field}
                             />
                             {registrationForm.formState.errors.name && (
-                              <p className="text-xs text-red-500 mt-1 italic">
+                              <p className="text-xs text-destructive mt-1 italic">
                                 {registrationForm.formState.errors.name.message}
                               </p>
                             )}
@@ -266,11 +265,11 @@ export function SignUpFlow() {
                             <Input
                               placeholder="Email Address"
                               type="email"
-                              className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                              className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                               {...field}
                             />
                             {registrationForm.formState.errors.email && (
-                              <p className="text-xs text-red-500 mt-1 italic">
+                              <p className="text-xs text-destructive mt-1 italic">
                                 {registrationForm.formState.errors.email.message}
                               </p>
                             )}
@@ -291,11 +290,11 @@ export function SignUpFlow() {
                           <div className="relative">
                             <Input
                               placeholder="Organization Name"
-                              className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                              className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                               {...field}
                             />
                             {registrationForm.formState.errors.organizationName && (
-                              <p className="text-xs text-red-500 mt-1 italic">
+                              <p className="text-xs text-destructive mt-1 italic">
                                 {registrationForm.formState.errors.organizationName.message}
                               </p>
                             )}
@@ -316,10 +315,10 @@ export function SignUpFlow() {
                           <div className="relative">
                             <Input
                               placeholder="Join Existing Organization (Optional)"
-                              className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                              className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                               {...field}
                             />
-                            <p className="text-xs text-gray-500 mt-1 italic">
+                            <p className="text-xs text-muted-foreground mt-1 italic">
                               Leave blank to create your own workspace
                             </p>
                           </div>
@@ -340,11 +339,11 @@ export function SignUpFlow() {
                             <Input
                               placeholder="Password"
                               type="password"
-                              className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                              className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                               {...field}
                             />
                             {registrationForm.formState.errors.password && (
-                              <p className="text-xs text-red-500 mt-1 italic">
+                              <p className="text-xs text-destructive mt-1 italic">
                                 {registrationForm.formState.errors.password.message}
                               </p>
                             )}
@@ -364,11 +363,11 @@ export function SignUpFlow() {
                             <Input
                               placeholder="Confirm Password"
                               type="password"
-                              className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                              className="bg-muted border-0 rounded-lg py-3 px-4 placeholder:text-muted-foreground"
                               {...field}
                             />
                             {registrationForm.formState.errors.confirmPassword && (
-                              <p className="text-xs text-red-500 mt-1 italic">
+                              <p className="text-xs text-destructive mt-1 italic">
                                 {registrationForm.formState.errors.confirmPassword.message}
                               </p>
                             )}
@@ -381,7 +380,7 @@ export function SignUpFlow() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-medium mt-8"
+                  className="w-full py-3 rounded-lg font-medium mt-8"
                   disabled={isLoading}
                 >
                   {isLoading ? "Creating account..." : "Register"}
