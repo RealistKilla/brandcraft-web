@@ -1,44 +1,54 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
-import { prisma } from '@/lib/prisma';
-import { generateObject } from 'ai';
-import { google } from '@ai-sdk/google';
-import { z } from 'zod';
+import { NextRequest, NextResponse } from "next/server";
+import { verifyToken } from "@/lib/auth";
+import { prisma } from "@/lib/prisma";
+import { generateObject } from "ai";
+import { google } from "@ai-sdk/google";
+import { z } from "zod";
 
 // Schema for platform-specific content generation
 const contentSchema = z.object({
-  title: z.string().describe('The title/headline for the content'),
-  content: z.string().describe('The main content/copy for the platform'),
-  imageDescription: z.string().describe('Detailed description of the ideal image/visual for this content'),
-  altText: z.string().describe('Accessibility alt text for the image'),
-  hashtags: z.array(z.string()).describe('Relevant hashtags for the platform'),
-  callToAction: z.string().describe('Clear call-to-action for the audience'),
-  postDescription: z.string().describe('Meta description or post summary'),
-  targetAudience: z.string().describe('Specific audience segment this content targets'),
-  bestPostingTime: z.string().describe('Recommended posting time for maximum engagement'),
-  engagementStrategy: z.string().describe('Strategy to encourage engagement (likes, shares, comments)'),
+  title: z.string().describe("The title/headline for the content"),
+  content: z.string().describe("The main content/copy for the platform"),
+  imageDescription: z
+    .string()
+    .describe(
+      "Detailed description of the ideal image/visual for this content"
+    ),
+  altText: z.string().describe("Accessibility alt text for the image"),
+  hashtags: z.array(z.string()).describe("Relevant hashtags for the platform"),
+  callToAction: z.string().describe("Clear call-to-action for the audience"),
+  postDescription: z.string().describe("Meta description or post summary"),
+  targetAudience: z
+    .string()
+    .describe("Specific audience segment this content targets"),
+  bestPostingTime: z
+    .string()
+    .describe("Recommended posting time for maximum engagement"),
+  engagementStrategy: z
+    .string()
+    .describe("Strategy to encourage engagement (likes, shares, comments)"),
 });
 
 // Create a dynamic schema based on requested platforms
 const createPlatformContentSchema = (platforms: string[]) => {
   const platformProperties: Record<string, any> = {};
-  
-  platforms.forEach(platform => {
+
+  platforms.forEach((platform) => {
     platformProperties[platform] = contentSchema;
   });
-  
+
   return z.object(platformProperties);
 };
 
 export async function POST(request: NextRequest) {
   try {
-    const token = request.cookies.get('auth-token')?.value;
+    const token = request.cookies.get("auth-token")?.value;
 
     if (!token) {
       return NextResponse.json(
         {
           success: false,
-          message: 'No authentication token found',
+          message: "No authentication token found",
         },
         { status: 401 }
       );
@@ -49,19 +59,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Invalid or expired token',
+          message: "Invalid or expired token",
         },
         { status: 401 }
       );
     }
 
-    const { campaignId, title, platforms, additionalContext } = await request.json();
+    const { campaignId, title, platforms, additionalContext } =
+      await request.json();
 
     if (!campaignId || !title || !platforms || platforms.length === 0) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Campaign ID, title, and platforms are required',
+          message: "Campaign ID, title, and platforms are required",
         },
         { status: 400 }
       );
@@ -82,7 +93,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           success: false,
-          message: 'Campaign not found or access denied',
+          message: "Campaign not found or access denied",
         },
         { status: 404 }
       );
@@ -93,7 +104,7 @@ export async function POST(request: NextRequest) {
 
     // Generate platform-specific content using Gemini AI
     const result = await generateObject({
-      model: google('gemini-1.5-pro'),
+      model: google("gemini-1.5-pro"),
       schema: platformContentSchema,
       prompt: `
         You are a content marketing expert tasked with creating platform-specific content for a marketing campaign.
@@ -112,10 +123,12 @@ export async function POST(request: NextRequest) {
         
         CONTENT REQUIREMENTS:
         Title/Theme: ${title}
-        Platforms: ${platforms.join(', ')}
-        Additional Context: ${additionalContext || 'None provided'}
+        Platforms: ${platforms.join(", ")}
+        Additional Context: ${additionalContext || "None provided"}
         
-        Create optimized content for each of these platforms: ${platforms.join(', ')}. The content should:
+        Create optimized content for each of these platforms: ${platforms.join(
+          ", "
+        )}. The content should:
         1. Aligns with the campaign strategy and persona preferences
         2. Follows platform-specific best practices and formats
         3. Uses appropriate tone and messaging for the target audience
@@ -137,19 +150,21 @@ export async function POST(request: NextRequest) {
         - Has clear calls-to-action
         - Optimizes for platform algorithms and engagement
         
-        IMPORTANT: Only generate content for these specific platforms: ${platforms.join(', ')}
+        IMPORTANT: Only generate content for these specific platforms: ${platforms.join(
+          ", "
+        )}
       `,
     });
 
     // Save each platform's content to the database
     const savedContent = [];
-    
+
     for (const [platform, content] of Object.entries(result.object)) {
       // Only process platforms that were requested
       if (!platforms.includes(platform)) {
         continue;
       }
-      
+
       const contentRecord = await prisma.content.create({
         data: {
           title: `${title} - ${platform}`,
@@ -167,8 +182,8 @@ export async function POST(request: NextRequest) {
             bestPostingTime: content.bestPostingTime,
             engagementStrategy: content.engagementStrategy,
           }),
-          type: 'SOCIAL_POST',
-          status: 'DRAFT',
+          type: "SOCIAL_POST",
+          status: "DRAFT",
           orgId: decoded.orgId,
           creatorId: decoded.id,
           campaignId: campaignId,
@@ -199,11 +214,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         success: true,
-        message: 'Content generated successfully',
+        message: "Content generated successfully",
         data: {
           contentCount: savedContent.length,
           platforms: platforms,
-          content: savedContent.map(item => ({
+          content: savedContent.map((item) => ({
             id: item.id,
             title: item.title,
             description: item.description,
@@ -214,14 +229,17 @@ export async function POST(request: NextRequest) {
       },
       { status: 201 }
     );
-  } catch (error) {
-    console.error('Generate content error:', error);
-    
+  } catch (error: any) {
+    console.error("Generate content error:", error);
+
     return NextResponse.json(
       {
         success: false,
-        message: 'Failed to generate content',
-        error: process.env.NODE_ENV === 'development' ? error.message : 'An unexpected error occurred',
+        message: "Failed to generate content",
+        error:
+          process.env.NODE_ENV === "development"
+            ? error.message
+            : "An unexpected error occurred",
       },
       { status: 500 }
     );
