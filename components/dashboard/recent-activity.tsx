@@ -1,110 +1,102 @@
 "use client";
 
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
+import { User, MapPin, Calendar, Building } from "lucide-react";
 
-const activities = [
-  {
-    id: "1",
-    type: "payment",
-    status: "completed",
-    amount: "$250.00",
-    date: "2023-05-21T10:30:00",
-    user: {
-      name: "Alex Johnson",
-      email: "alex@example.com",
-      avatar: "A",
-    },
-  },
-  {
-    id: "2",
-    type: "subscription",
-    status: "pending",
-    amount: "$19.99",
-    date: "2023-05-20T14:45:00",
-    user: {
-      name: "Sarah Williams",
-      email: "sarah@example.com",
-      avatar: "S",
-    },
-  },
-  {
-    id: "3",
-    type: "refund",
-    status: "completed",
-    amount: "$120.00",
-    date: "2023-05-19T09:15:00",
-    user: {
-      name: "Michael Brown",
-      email: "michael@example.com",
-      avatar: "M",
-    },
-  },
-  {
-    id: "4",
-    type: "payment",
-    status: "failed",
-    amount: "$350.00",
-    date: "2023-05-18T16:20:00",
-    user: {
-      name: "Emily Davis",
-      email: "emily@example.com",
-      avatar: "E",
-    },
-  },
-  {
-    id: "5",
-    type: "subscription",
-    status: "completed",
-    amount: "$29.99",
-    date: "2023-05-17T11:05:00",
-    user: {
-      name: "David Wilson",
-      email: "david@example.com",
-      avatar: "D",
-    },
-  },
-];
+interface User {
+  id: string;
+  jobTitle: string;
+  location: string;
+  age: string;
+  industry: string;
+  signupDate: string;
+  monthlySpendUsd: number | null;
+  active: boolean;
+}
 
-export function RecentActivity() {
+interface RecentActivityProps {
+  users: User[];
+}
+
+export function RecentActivity({ users }: RecentActivityProps) {
+  const formatCurrency = (amount: number | null) => {
+    if (amount === null) return 'Free';
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
+  };
+
+  if (users.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center py-8 text-center">
+        <div className="rounded-full bg-muted p-6 w-16 h-16 flex items-center justify-center mb-4">
+          <User className="h-8 w-8 text-muted-foreground" />
+        </div>
+        <h3 className="text-sm font-medium mb-1">No new users</h3>
+        <p className="text-xs text-muted-foreground">
+          No platform users have signed up in the last 7 days.
+        </p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
-      {activities.map((activity) => (
+      {users.map((user) => (
         <div
-          key={activity.id}
-          className="flex items-center gap-4 rounded-lg border p-3"
+          key={user.id}
+          className="flex items-start gap-4 rounded-lg border p-3 hover:bg-muted/50 transition-colors"
         >
           <Avatar className="h-9 w-9">
-            <AvatarFallback>{activity.user.avatar}</AvatarFallback>
+            <AvatarFallback className="bg-primary/10 text-primary">
+              <User className="h-4 w-4" />
+            </AvatarFallback>
           </Avatar>
-          <div className="flex-1 space-y-1">
-            <p className="text-sm font-medium leading-none">
-              {activity.user.name}
-            </p>
-            <p className="text-sm text-muted-foreground">
-              {activity.type.charAt(0).toUpperCase() + activity.type.slice(1)} ({activity.amount})
-            </p>
-          </div>
-          <div className="flex flex-col items-end">
-            <span
-              className={cn(
-                "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
-                {
-                  "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400":
-                    activity.status === "completed",
-                  "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-400":
-                    activity.status === "pending",
-                  "bg-red-100 text-red-700 dark:bg-red-500/20 dark:text-red-400":
-                    activity.status === "failed",
-                }
-              )}
-            >
-              {activity.status}
-            </span>
-            <time className="text-xs text-muted-foreground">
-              {format(new Date(activity.date), "MMM d, h:mm a")}
-            </time>
+          <div className="flex-1 space-y-1 min-w-0">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-medium leading-none truncate">
+                {user.jobTitle}
+              </p>
+              <span
+                className={cn(
+                  "inline-flex items-center rounded-full px-2 py-1 text-xs font-medium",
+                  user.active
+                    ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-400"
+                    : "bg-gray-100 text-gray-700 dark:bg-gray-500/20 dark:text-gray-400"
+                )}
+              >
+                {user.active ? "Active" : "Inactive"}
+              </span>
+            </div>
+            
+            <div className="space-y-1">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <MapPin className="h-3 w-3" />
+                <span className="truncate">{user.location}</span>
+                <span className="mx-1">•</span>
+                <span>{user.age}</span>
+              </div>
+              
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Building className="h-3 w-3" />
+                <span className="truncate">{user.industry}</span>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between pt-1">
+              <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <Calendar className="h-3 w-3" />
+                <time>
+                  {format(new Date(user.signupDate), "MMM d, h:mm a")}
+                </time>
+              </div>
+              <span className="text-xs font-medium">
+                {formatCurrency(user.monthlySpendUsd)}
+              </span>
+            </div>
           </div>
         </div>
       ))}

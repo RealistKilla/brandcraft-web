@@ -12,22 +12,14 @@ import {
 } from "recharts";
 import { Card, CardContent } from "@/components/ui/card";
 
-const data = [
-  { name: "Jan", total: 1200 },
-  { name: "Feb", total: 2100 },
-  { name: "Mar", total: 1800 },
-  { name: "Apr", total: 2400 },
-  { name: "May", total: 2800 },
-  { name: "Jun", total: 3200 },
-  { name: "Jul", total: 3800 },
-  { name: "Aug", total: 4300 },
-  { name: "Sep", total: 4900 },
-  { name: "Oct", total: 5400 },
-  { name: "Nov", total: 5800 },
-  { name: "Dec", total: 6300 },
-];
+interface OverviewProps {
+  data: Array<{
+    name: string;
+    total: number;
+  }>;
+}
 
-export function Overview() {
+export function Overview({ data }: OverviewProps) {
   return (
     <ResponsiveContainer width="100%" height={350}>
       <LineChart

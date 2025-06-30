@@ -85,6 +85,9 @@ export const api = {
     getData: (applicationId: string) => 
       apiRequest(`/analytics?applicationId=${applicationId}`),
   },
+  dashboard: {
+    getOverview: () => apiRequest('/dashboard/overview'),
+  },
 };
 
 export { ApiError };
