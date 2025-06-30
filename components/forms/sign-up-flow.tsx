@@ -153,9 +153,9 @@ export function SignUpFlow() {
                                 <Building2 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-semibold">Small business</h3>
+                                <h3 className="font-semibold">Individual</h3>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                  You're here if you're operating from a single branch with low volumes.
+                                  You want this product for personal use.
                                 </p>
                               </div>
                             </div>
@@ -175,9 +175,9 @@ export function SignUpFlow() {
                                 <User className="h-8 w-8 text-purple-600 dark:text-purple-400" />
                               </div>
                               <div className="flex-1">
-                                <h3 className="font-semibold">Large company</h3>
+                                <h3 className="font-semibold">Organization</h3>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                  You're here if you're a branch of a larger company.
+                                  You're an organization
                                 </p>
                               </div>
                             </div>
