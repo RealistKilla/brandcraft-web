@@ -87,7 +87,7 @@ export const api = {
   },
   personas: {
     getAll: () => apiRequest('/personas'),
-    generate: (data: { applicationId: string }) =>
+    generate: (data: { applicationId: string; filters?: any }) =>
       apiRequest('/generate-persona', {
         method: 'POST',
         body: JSON.stringify(data),
@@ -100,6 +100,27 @@ export const api = {
       preferences: any;
     }) =>
       apiRequest('/personas', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  },
+  campaigns: {
+    getAll: () => apiRequest('/campaigns'),
+    generate: (data: { personaId: string }) =>
+      apiRequest('/generate-campaign', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+    create: (data: { 
+      name: string; 
+      description: string;
+      strategy: string;
+      personaId: string;
+      startDate?: string;
+      endDate?: string;
+      budget?: number;
+    }) =>
+      apiRequest('/campaigns', {
         method: 'POST',
         body: JSON.stringify(data),
       }),

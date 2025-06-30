@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { applicationId } = await request.json();
+    const { applicationId, filters } = await request.json();
 
     if (!applicationId) {
       return NextResponse.json(
