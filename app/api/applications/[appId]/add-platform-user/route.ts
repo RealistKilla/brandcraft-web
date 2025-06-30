@@ -3,9 +3,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(
   request: Request,
-  { params }: { params: { appId: string } }
+  { params }: { params: Promise<{ appId: string }> }
 ) {
-  const { appId } = params;
+  const { appId } = await params;
   const body = await request.json();
 
   const validApp = await prisma.application.findUnique({
