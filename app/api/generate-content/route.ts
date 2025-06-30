@@ -19,9 +19,16 @@ const contentSchema = z.object({
   engagementStrategy: z.string().describe('Strategy to encourage engagement (likes, shares, comments)'),
 });
 
-const platformContentSchema = z.object({
-  platforms: z.record(z.string(), contentSchema).describe('Content optimized for each specified platform')
-});
+// Create a dynamic schema based on requested platforms
+const createPlatformContentSchema = (platforms: string[]) => {
+  const platformProperties: Record<string, any> = {};
+  
+  platforms.forEach(platform => {
+    platformProperties[platform] = contentSchema;
+  });
+  
+  return z.object(platformProperties);
+};
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,6 +88,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Create schema for the specific platforms requested
+    const platformContentSchema = createPlatformContentSchema(platforms);
+
     // Generate platform-specific content using Gemini AI
     const result = await generateObject({
       model: google('gemini-1.5-pro'),
@@ -134,7 +144,7 @@ export async function POST(request: NextRequest) {
     // Save each platform's content to the database
     const savedContent = [];
     
-    for (const [platform, content] of Object.entries(result.object.platforms)) {
+    for (const [platform, content] of Object.entries(result.object)) {
       // Only process platforms that were requested
       if (!platforms.includes(platform)) {
         continue;
