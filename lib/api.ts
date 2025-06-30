@@ -24,6 +24,7 @@ async function apiRequest<T = any>(
       'Content-Type': 'application/json',
       ...options.headers,
     },
+    credentials: 'include',
     ...options,
   };
 

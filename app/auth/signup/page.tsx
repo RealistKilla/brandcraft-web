@@ -4,6 +4,8 @@ import Link from "next/link";
 import { getServerUser } from '@/lib/auth-server';
 import { SignUpFlow } from "@/components/forms/sign-up-flow";
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: "Sign Up",
   description: "Create a new account",
