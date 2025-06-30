@@ -4,6 +4,7 @@ import React from "react";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
+import Link from "next/link";
 
 export function Hero() {
   return (
@@ -48,9 +49,13 @@ export function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.6 }}
           >
-            <Button size="lg" className="h-12 px-8 font-medium rounded-full" asChild>
+            <Button
+              size="lg"
+              className="h-12 px-8 font-medium rounded-full"
+              asChild
+            >
               <Link href="/auth/signup">
-              Get Started <ArrowRight className="ml-2 h-4 w-4" />
+                Get Started <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
             <Button
@@ -59,9 +64,7 @@ export function Hero() {
               className="h-12 px-8 font-medium rounded-full"
               asChild
             >
-              <Link href="/features">
-              Watch Demo
-              </Link>
+              <Link href="/features">Watch Demo</Link>
             </Button>
           </motion.div>
 
