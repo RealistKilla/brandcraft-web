@@ -1,27 +1,58 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Metadata } from 'next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Target, Calendar, DollarSign, TrendingUp, Users, FileText, Sparkles, Eye, Brain } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
-import { api, ApiError } from '@/lib/api';
-import { format } from 'date-fns';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Checkbox } from '@/components/ui/checkbox';
+import { useState, useEffect } from "react";
+import { Metadata } from "next";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Plus,
+  Target,
+  Calendar,
+  DollarSign,
+  TrendingUp,
+  Users,
+  FileText,
+  Sparkles,
+  Eye,
+  Brain,
+} from "lucide-react";
+import { toast } from "@/hooks/use-toast";
+import { api, ApiError } from "@/lib/api";
+import { format } from "date-fns";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 
 interface Campaign {
   id: string;
   name: string;
   description: string;
   strategy: string;
-  status: 'DRAFT' | 'ACTIVE' | 'PAUSED' | 'COMPLETED';
+  status: "DRAFT" | "ACTIVE" | "PAUSED" | "COMPLETED";
   startDate: string | null;
   endDate: string | null;
   budget: number | null;
@@ -48,16 +79,16 @@ interface Persona {
 
 const getStatusColor = (status: string) => {
   switch (status) {
-    case 'ACTIVE':
-      return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
-    case 'DRAFT':
-      return 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400';
-    case 'COMPLETED':
-      return 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400';
-    case 'PAUSED':
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+    case "ACTIVE":
+      return "bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400";
+    case "DRAFT":
+      return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400";
+    case "COMPLETED":
+      return "bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400";
+    case "PAUSED":
+      return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
     default:
-      return 'bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400';
+      return "bg-gray-100 text-gray-800 dark:bg-gray-900/20 dark:text-gray-400";
   }
 };
 
@@ -67,22 +98,40 @@ export default function CampaignsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
+  const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(
+    null
+  );
   const [isGenerating, setIsGenerating] = useState(false);
-  const [selectedPersonaId, setSelectedPersonaId] = useState<string>('');
+  const [selectedPersonaId, setSelectedPersonaId] = useState<string>("");
   const [isContentModalOpen, setIsContentModalOpen] = useState(false);
   const [isGeneratingContent, setIsGeneratingContent] = useState(false);
-  const [contentTitle, setContentTitle] = useState('');
-  const [additionalContext, setAdditionalContext] = useState('');
+  const [contentTitle, setContentTitle] = useState("");
+  const [additionalContext, setAdditionalContext] = useState("");
   const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
 
   const availablePlatforms = [
-    { id: 'instagram', name: 'Instagram', description: 'Visual-first social platform' },
-    { id: 'twitter', name: 'Twitter/X', description: 'Real-time conversation platform' },
-    { id: 'linkedin', name: 'LinkedIn', description: 'Professional networking platform' },
-    { id: 'facebook', name: 'Facebook', description: 'Community-focused social platform' },
-    { id: 'tiktok', name: 'TikTok', description: 'Short-form video platform' },
-    { id: 'youtube', name: 'YouTube', description: 'Video content platform' },
+    {
+      id: "instagram",
+      name: "Instagram",
+      description: "Visual-first social platform",
+    },
+    {
+      id: "twitter",
+      name: "Twitter/X",
+      description: "Real-time conversation platform",
+    },
+    {
+      id: "linkedin",
+      name: "LinkedIn",
+      description: "Professional networking platform",
+    },
+    {
+      id: "facebook",
+      name: "Facebook",
+      description: "Community-focused social platform",
+    },
+    { id: "tiktok", name: "TikTok", description: "Short-form video platform" },
+    { id: "youtube", name: "YouTube", description: "Video content platform" },
   ];
 
   useEffect(() => {
@@ -96,7 +145,7 @@ export default function CampaignsPage() {
       const response = await api.campaigns.getAll();
       setCampaigns(response.data || []);
     } catch (error) {
-      console.error('Failed to fetch campaigns:', error);
+      console.error("Failed to fetch campaigns:", error);
       toast({
         title: "Error",
         description: "Failed to load campaigns. Please try again.",
@@ -112,7 +161,7 @@ export default function CampaignsPage() {
       const response = await api.personas.getAll();
       setPersonas(response.data || []);
     } catch (error) {
-      console.error('Failed to fetch personas:', error);
+      console.error("Failed to fetch personas:", error);
     }
   };
 
@@ -133,23 +182,26 @@ export default function CampaignsPage() {
         personaId: selectedPersonaId,
       });
 
-      setCampaigns(prev => [{ ...response.data, _count: { contents: 0 } }, ...prev]);
-      setSelectedPersonaId('');
+      setCampaigns((prev) => [
+        { ...response.data, _count: { contents: 0 } },
+        ...prev,
+      ]);
+      setSelectedPersonaId("");
       setIsGenerateModalOpen(false);
-      
+
       toast({
         title: "AI Campaign Generated!",
         description: `"${response.data.name}" has been created successfully.`,
       });
     } catch (error) {
-      console.error('Generate campaign error:', error);
-      
+      console.error("Generate campaign error:", error);
+
       let errorMessage = "Failed to generate campaign. Please try again.";
-      
+
       if (error instanceof ApiError) {
         errorMessage = error.message;
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -167,14 +219,18 @@ export default function CampaignsPage() {
 
   const handleGenerateContent = (campaign: Campaign) => {
     setSelectedCampaign(campaign);
-    setContentTitle('');
-    setAdditionalContext('');
+    setContentTitle("");
+    setAdditionalContext("");
     setSelectedPlatforms([]);
     setIsContentModalOpen(true);
   };
 
   const handleContentGeneration = async () => {
-    if (!selectedCampaign || !contentTitle.trim() || selectedPlatforms.length === 0) {
+    if (
+      !selectedCampaign ||
+      !contentTitle.trim() ||
+      selectedPlatforms.length === 0
+    ) {
       toast({
         title: "Error",
         description: "Please provide a title and select at least one platform.",
@@ -195,23 +251,27 @@ export default function CampaignsPage() {
 
       toast({
         title: "Content Generated!",
-        description: `Created ${response.data.contentCount} pieces of content for ${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''}.`,
+        description: `Created ${
+          response.data.contentCount
+        } pieces of content for ${selectedPlatforms.length} platform${
+          selectedPlatforms.length > 1 ? "s" : ""
+        }.`,
       });
-      
+
       setIsContentModalOpen(false);
       setSelectedCampaign(null);
-      setContentTitle('');
-      setAdditionalContext('');
+      setContentTitle("");
+      setAdditionalContext("");
       setSelectedPlatforms([]);
     } catch (error) {
-      console.error('Generate content error:', error);
-      
+      console.error("Generate content error:", error);
+
       let errorMessage = "Failed to generate content. Please try again.";
-      
+
       if (error instanceof ApiError) {
         errorMessage = error.message;
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -223,18 +283,18 @@ export default function CampaignsPage() {
   };
 
   const handlePlatformToggle = (platformId: string) => {
-    setSelectedPlatforms(prev => 
-      prev.includes(platformId) 
-        ? prev.filter(id => id !== platformId)
+    setSelectedPlatforms((prev) =>
+      prev.includes(platformId)
+        ? prev.filter((id) => id !== platformId)
         : [...prev, platformId]
     );
   };
 
   const formatCurrency = (amount: number | null) => {
-    if (!amount) return 'Not set';
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    if (!amount) return "Not set";
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
@@ -266,7 +326,7 @@ export default function CampaignsPage() {
     );
   }
 
-  const activeCampaigns = campaigns.filter(c => c.status === 'ACTIVE').length;
+  const activeCampaigns = campaigns.filter((c) => c.status === "ACTIVE").length;
   const totalBudget = campaigns.reduce((sum, c) => sum + (c.budget || 0), 0);
   const avgBudget = campaigns.length > 0 ? totalBudget / campaigns.length : 0;
 
@@ -279,7 +339,10 @@ export default function CampaignsPage() {
             AI-generated marketing campaigns tailored to your customer personas.
           </p>
         </div>
-        <Dialog open={isGenerateModalOpen} onOpenChange={setIsGenerateModalOpen}>
+        <Dialog
+          open={isGenerateModalOpen}
+          onOpenChange={setIsGenerateModalOpen}
+        >
           <DialogTrigger asChild>
             <Button>
               <Sparkles className="mr-2 h-4 w-4" />
@@ -293,13 +356,17 @@ export default function CampaignsPage() {
                 Generate AI Campaign
               </DialogTitle>
               <DialogDescription>
-                Select a persona to generate a targeted marketing campaign using AI.
+                Select a persona to generate a targeted marketing campaign using
+                AI.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4 py-4">
               <div>
                 <Label htmlFor="persona">Select Persona</Label>
-                <Select value={selectedPersonaId} onValueChange={setSelectedPersonaId}>
+                <Select
+                  value={selectedPersonaId}
+                  onValueChange={setSelectedPersonaId}
+                >
                   <SelectTrigger>
                     <SelectValue placeholder="Choose a persona to create a campaign for" />
                   </SelectTrigger>
@@ -318,17 +385,21 @@ export default function CampaignsPage() {
                 </Select>
                 {personas.length === 0 && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    No personas available. Create personas first to generate campaigns.
+                    No personas available. Create personas first to generate
+                    campaigns.
                   </p>
                 )}
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsGenerateModalOpen(false)}>
+              <Button
+                variant="outline"
+                onClick={() => setIsGenerateModalOpen(false)}
+              >
                 Cancel
               </Button>
-              <Button 
-                onClick={handleGenerateCampaign} 
+              <Button
+                onClick={handleGenerateCampaign}
                 disabled={isGenerating || !selectedPersonaId}
               >
                 {isGenerating ? (
@@ -351,7 +422,9 @@ export default function CampaignsPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Campaigns</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Total Campaigns
+            </CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -363,14 +436,14 @@ export default function CampaignsPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Campaigns</CardTitle>
+            <CardTitle className="text-sm font-medium">
+              Active Campaigns
+            </CardTitle>
             <TrendingUp className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">{activeCampaigns}</div>
-            <p className="text-xs text-muted-foreground">
-              Currently running
-            </p>
+            <p className="text-xs text-muted-foreground">Currently running</p>
           </CardContent>
         </Card>
         <Card>
@@ -379,7 +452,9 @@ export default function CampaignsPage() {
             <DollarSign className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(totalBudget)}</div>
+            <div className="text-2xl font-bold">
+              {formatCurrency(totalBudget)}
+            </div>
             <p className="text-xs text-muted-foreground">
               Across all campaigns
             </p>
@@ -391,17 +466,17 @@ export default function CampaignsPage() {
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{formatCurrency(avgBudget)}</div>
-            <p className="text-xs text-muted-foreground">
-              Per campaign
-            </p>
+            <div className="text-2xl font-bold">
+              {formatCurrency(avgBudget)}
+            </div>
+            <p className="text-xs text-muted-foreground">Per campaign</p>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Generate Campaign Card */}
-        <Card 
+        <Card
           className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer transition-colors"
           onClick={() => setIsGenerateModalOpen(true)}
         >
@@ -411,25 +486,30 @@ export default function CampaignsPage() {
             </div>
             <h3 className="text-lg font-semibold mb-2">Generate AI Campaign</h3>
             <p className="text-sm text-muted-foreground">
-              {personas.length > 0 
+              {personas.length > 0
                 ? "Create a targeted marketing campaign from your personas using AI"
-                : "Create personas first to generate campaigns"
-              }
+                : "Create personas first to generate campaigns"}
             </p>
           </CardContent>
         </Card>
 
         {/* Campaign Cards */}
         {campaigns.map((campaign) => (
-          <Card key={campaign.id} className="cursor-pointer hover:shadow-md transition-shadow">
+          <Card
+            key={campaign.id}
+            className="cursor-pointer hover:shadow-md transition-shadow"
+          >
             <CardHeader>
               <div className="flex items-center justify-between">
                 <div className="space-y-1">
                   <CardTitle className="text-lg">{campaign.name}</CardTitle>
-                  <CardDescription className="line-clamp-2">{campaign.description}</CardDescription>
+                  <CardDescription className="line-clamp-2">
+                    {campaign.description}
+                  </CardDescription>
                 </div>
                 <Badge className={getStatusColor(campaign.status)}>
-                  {campaign.status.charAt(0).toUpperCase() + campaign.status.slice(1)}
+                  {campaign.status.charAt(0).toUpperCase() +
+                    campaign.status.slice(1)}
                 </Badge>
               </div>
             </CardHeader>
@@ -437,34 +517,46 @@ export default function CampaignsPage() {
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-muted-foreground">Target Persona:</span>
+                    <span className="text-muted-foreground">
+                      Target Persona:
+                    </span>
                     <p className="font-medium">{campaign.persona.name}</p>
                   </div>
-                  
+
                   <div>
                     <span className="text-muted-foreground">Budget:</span>
-                    <p className="font-medium">{formatCurrency(campaign.budget)}</p>
+                    <p className="font-medium">
+                      {formatCurrency(campaign.budget)}
+                    </p>
                   </div>
-                  
+
                   <div>
                     <span className="text-muted-foreground">Start Date:</span>
                     <p className="font-medium">
-                      {campaign.startDate ? format(new Date(campaign.startDate), 'MMM d, yyyy') : 'Not set'}
+                      {campaign.startDate
+                        ? format(new Date(campaign.startDate), "MMM d, yyyy")
+                        : "Not set"}
                     </p>
                   </div>
-                  
+
                   <div>
                     <span className="text-muted-foreground">Content:</span>
-                    <p className="font-medium">{campaign._count.contents} pieces</p>
+                    <p className="font-medium">
+                      {campaign._count.contents} pieces
+                    </p>
                   </div>
                 </div>
 
                 <div className="flex items-center justify-between pt-2 border-t">
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">
                     <Calendar className="h-3 w-3" />
-                    Created {format(new Date(campaign.createdAt), 'MMM d')}
+                    Created {format(new Date(campaign.createdAt), "MMM d")}
                   </div>
-                  <Button size="sm" variant="outline" onClick={() => handleViewCampaign(campaign)}>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleViewCampaign(campaign)}
+                  >
                     <Eye className="h-4 w-4 mr-1" />
                     View
                   </Button>
@@ -482,10 +574,9 @@ export default function CampaignsPage() {
           </div>
           <h3 className="text-lg font-semibold mb-2">No campaigns yet</h3>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            {personas.length > 0 
+            {personas.length > 0
               ? "Generate your first AI-powered marketing campaign from your existing personas."
-              : "Create personas first, then generate targeted campaigns from them using AI."
-            }
+              : "Create personas first, then generate targeted campaigns from them using AI."}
           </p>
           {personas.length === 0 ? (
             <Button variant="outline" asChild>
@@ -521,24 +612,29 @@ export default function CampaignsPage() {
                     {selectedCampaign.description}
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div>
                     <Label className="text-sm font-medium">Status</Label>
                     <div className="mt-1">
-                      <Badge className={getStatusColor(selectedCampaign.status)}>
-                        {selectedCampaign.status.charAt(0).toUpperCase() + selectedCampaign.status.slice(1)}
+                      <Badge
+                        className={getStatusColor(selectedCampaign.status)}
+                      >
+                        {selectedCampaign.status.charAt(0).toUpperCase() +
+                          selectedCampaign.status.slice(1)}
                       </Badge>
                     </div>
                   </div>
-                  
+
                   <div>
-                    <Label className="text-sm font-medium">Target Persona</Label>
+                    <Label className="text-sm font-medium">
+                      Target Persona
+                    </Label>
                     <div className="mt-1 p-3 bg-muted rounded-md text-sm">
                       {selectedCampaign.persona.name}
                     </div>
                   </div>
-                  
+
                   <div>
                     <Label className="text-sm font-medium">Budget</Label>
                     <div className="mt-1 p-3 bg-muted rounded-md text-sm">
@@ -547,34 +643,48 @@ export default function CampaignsPage() {
                   </div>
                 </div>
               </div>
-              
+
               <div>
-                <Label className="text-sm font-medium">AI-Generated Strategy</Label>
+                <Label className="text-sm font-medium">
+                  AI-Generated Strategy
+                </Label>
                 <div className="mt-1 p-4 bg-muted rounded-md text-sm whitespace-pre-wrap max-h-64 overflow-y-auto">
                   {selectedCampaign.strategy}
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <Label className="text-sm font-medium">Start Date</Label>
                   <div className="mt-1 p-3 bg-muted rounded-md text-sm">
-                    {selectedCampaign.startDate ? format(new Date(selectedCampaign.startDate), 'MMMM d, yyyy') : 'Not set'}
+                    {selectedCampaign.startDate
+                      ? format(
+                          new Date(selectedCampaign.startDate),
+                          "MMMM d, yyyy"
+                        )
+                      : "Not set"}
                   </div>
                 </div>
-                
+
                 <div>
                   <Label className="text-sm font-medium">End Date</Label>
                   <div className="mt-1 p-3 bg-muted rounded-md text-sm">
-                    {selectedCampaign.endDate ? format(new Date(selectedCampaign.endDate), 'MMMM d, yyyy') : 'Not set'}
+                    {selectedCampaign.endDate
+                      ? format(
+                          new Date(selectedCampaign.endDate),
+                          "MMMM d, yyyy"
+                        )
+                      : "Not set"}
                   </div>
                 </div>
               </div>
-              
+
               <div>
                 <Label className="text-sm font-medium">Created By</Label>
                 <div className="mt-1 p-3 bg-muted rounded-md text-sm">
-                  {selectedCampaign.creator.name} ({selectedCampaign.creator.email}) on {format(new Date(selectedCampaign.createdAt), 'MMMM d, yyyy')}
+                  {selectedCampaign.creator.name} (
+                  {selectedCampaign.creator.email}) on{" "}
+                  {format(new Date(selectedCampaign.createdAt), "MMMM d, yyyy")}
                 </div>
               </div>
             </div>
@@ -583,7 +693,11 @@ export default function CampaignsPage() {
             <Button variant="outline" onClick={() => setIsViewModalOpen(false)}>
               Close
             </Button>
-            <Button onClick={() => handleGenerateContent(selectedCampaign)}>
+            <Button
+              onClick={() =>
+                handleGenerateContent(selectedCampaign as Campaign)
+              }
+            >
               <Sparkles className="h-4 w-4 mr-2" />
               Generate Content
             </Button>
@@ -600,10 +714,11 @@ export default function CampaignsPage() {
               Generate Content for "{selectedCampaign?.name}"
             </DialogTitle>
             <DialogDescription>
-              Create platform-specific content based on your campaign strategy and target persona.
+              Create platform-specific content based on your campaign strategy
+              and target persona.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-6 py-4">
             <div>
               <Label htmlFor="contentTitle" className="text-sm font-medium">
@@ -617,7 +732,8 @@ export default function CampaignsPage() {
                 className="mt-1"
               />
               <p className="text-xs text-muted-foreground mt-1">
-                This will be the main theme or focus of your content across all platforms.
+                This will be the main theme or focus of your content across all
+                platforms.
               </p>
             </div>
 
@@ -631,8 +747,8 @@ export default function CampaignsPage() {
                     key={platform.id}
                     className={`p-3 rounded-lg border-2 cursor-pointer transition-all ${
                       selectedPlatforms.includes(platform.id)
-                        ? 'border-primary bg-primary/5'
-                        : 'border-border hover:border-primary/50'
+                        ? "border-primary bg-primary/5"
+                        : "border-border hover:border-primary/50"
                     }`}
                     onClick={() => handlePlatformToggle(platform.id)}
                   >
@@ -652,12 +768,16 @@ export default function CampaignsPage() {
                 ))}
               </div>
               <p className="text-xs text-muted-foreground mt-2">
-                Content will be optimized for each platform's format and audience.
+                Content will be optimized for each platform's format and
+                audience.
               </p>
             </div>
 
             <div>
-              <Label htmlFor="additionalContext" className="text-sm font-medium">
+              <Label
+                htmlFor="additionalContext"
+                className="text-sm font-medium"
+              >
                 Additional Context (Optional)
               </Label>
               <Textarea
@@ -677,7 +797,8 @@ export default function CampaignsPage() {
               <div className="p-4 bg-muted rounded-lg">
                 <h4 className="font-medium text-sm mb-2">Campaign Context</h4>
                 <p className="text-sm text-muted-foreground mb-1">
-                  <strong>Target Persona:</strong> {selectedCampaign.persona.name}
+                  <strong>Target Persona:</strong>{" "}
+                  {selectedCampaign.persona.name}
                 </p>
                 <p className="text-sm text-muted-foreground">
                   <strong>Campaign:</strong> {selectedCampaign.description}
@@ -687,12 +808,19 @@ export default function CampaignsPage() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsContentModalOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setIsContentModalOpen(false)}
+            >
               Cancel
             </Button>
-            <Button 
-              onClick={handleContentGeneration} 
-              disabled={isGeneratingContent || !contentTitle.trim() || selectedPlatforms.length === 0}
+            <Button
+              onClick={handleContentGeneration}
+              disabled={
+                isGeneratingContent ||
+                !contentTitle.trim() ||
+                selectedPlatforms.length === 0
+              }
             >
               {isGeneratingContent ? (
                 <>
@@ -726,18 +854,24 @@ export default function CampaignsPage() {
               <div className="p-4 rounded-lg bg-muted">
                 <h4 className="font-medium mb-2">Generate More Campaigns</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Create additional targeted campaigns for your other personas to maximize reach.
+                  Create additional targeted campaigns for your other personas
+                  to maximize reach.
                 </p>
-                <Button variant="outline" size="sm" onClick={() => setIsGenerateModalOpen(true)}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setIsGenerateModalOpen(true)}
+                >
                   <Sparkles className="h-4 w-4 mr-2" />
                   Generate Campaign
                 </Button>
               </div>
-              
+
               <div className="p-4 rounded-lg bg-muted">
                 <h4 className="font-medium mb-2">View Analytics</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Monitor your platform's user data to refine your campaign strategies.
+                  Monitor your platform's user data to refine your campaign
+                  strategies.
                 </p>
                 <Button variant="outline" size="sm" asChild>
                   <a href="/dashboard/analytics">View Analytics</a>
