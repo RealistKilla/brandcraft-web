@@ -11,7 +11,6 @@ import {
   FormControl,
   FormField,
   FormItem,
-  FormLabel,
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
@@ -75,35 +74,61 @@ export function SignInForm() {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
           control={form.control}
           name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Email</FormLabel>
               <FormControl>
-                <Input placeholder="you@example.com" type="email" {...field} />
+                <div className="relative">
+                  <Input
+                    placeholder="Email Address"
+                    type="email"
+                    className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                    {...field}
+                  />
+                  {form.formState.errors.email && (
+                    <p className="text-xs text-red-500 mt-1 italic">
+                      {form.formState.errors.email.message}
+                    </p>
+                  )}
+                </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
+        
         <FormField
           control={form.control}
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Password</FormLabel>
               <FormControl>
-                <Input placeholder="••••••••" type="password" {...field} />
+                <div className="relative">
+                  <Input
+                    placeholder="Password"
+                    type="password"
+                    className="bg-gray-100 border-0 rounded-lg py-3 px-4 placeholder-gray-500"
+                    {...field}
+                  />
+                  {form.formState.errors.password && (
+                    <p className="text-xs text-red-500 mt-1 italic">
+                      {form.formState.errors.password.message}
+                    </p>
+                  )}
+                </div>
               </FormControl>
-              <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Signing in..." : "Sign in"}
+        
+        <Button 
+          type="submit" 
+          className="w-full bg-green-500 hover:bg-green-600 text-white py-3 rounded-lg font-medium" 
+          disabled={isLoading}
+        >
+          {isLoading ? "Signing in..." : "Sign In"}
         </Button>
       </form>
     </Form>
