@@ -33,6 +33,8 @@ model Persona {
   creator       User      @relation(fields: [creatorId], references: [id])
   creatorId     String
   campaigns     Campaign[]
+
+  @@map("personas")
 }
 
 model Campaign {
@@ -53,6 +55,8 @@ model Campaign {
   persona       Persona   @relation(fields: [personaId], references: [id])
   personaId     String
   contents      Content[]
+
+  @@map("campaigns")
 }
 
 enum CampaignStatus {
@@ -77,6 +81,8 @@ model Content {
   creatorId     String
   campaign      Campaign  @relation(fields: [campaignId], references: [id])
   campaignId    String
+
+  @@map("content")
 }
 
 enum ContentType {
@@ -105,6 +111,8 @@ model Application {
   orgId         String
   creator       User      @relation(fields: [creatorId], references: [id])
   creatorId     String
+
+  @@map("applications")
 }
 
 model User {
@@ -125,6 +133,25 @@ model User {
   @@map("users")
 }
 
+model PlatformUser {
+  id                String   @id @default(uuid())
+  company           String?
+  jobTitle          String?  @map("job_title")
+  industry          String?
+  location          String?
+  age               String?
+  signupDate        DateTime @default(now()) @map("signup_date")
+  monthlySpendUsd   Float?   @map("monthly_spend_usd")
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+  orgId           String   @map("org_id")
+  organization    Organization @relation(fields: [orgId], references: [id])
+
+  @@index([orgId])               // helps queries like `where { orgId: … }`
+  
+  @@map("platform_users")
+}
 
 model Organization {
   id            String    @id @default(cuid())
@@ -132,6 +159,7 @@ model Organization {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
   users         User[]
+  platformUsers PlatformUser[]
   personas      Persona[]
   campaigns     Campaign[]
   contents      Content[]
@@ -146,4 +174,12 @@ model Industries {
   industry    String                                    @db.Text
 
   @@map("industries")   
+}
+
+model AgeRanges {
+  id          BigInt      @id @default(autoincrement()) @db.BigInt   
+  createdAt   DateTime    @default(now())              @map("created_at") @db.Timestamptz(6)
+  ageRange    String                                    @db.Text
+
+  @@map("age_ranges")   
 }
