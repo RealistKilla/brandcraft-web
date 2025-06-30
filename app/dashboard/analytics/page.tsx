@@ -1,17 +1,37 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { Metadata } from 'next';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Badge } from '@/components/ui/badge';
-import { AnalyticsChart } from '@/components/dashboard/analytics-chart';
-import { DemographicsChart } from '@/components/dashboard/demographics-chart';
-import { RecentUsersTable } from '@/components/dashboard/recent-users-table';
-import { api, ApiError } from '@/lib/api';
-import { toast } from '@/hooks/use-toast';
-import { Users, DollarSign, TrendingUp, Activity, Brain, Sparkles } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { Metadata } from "next";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { AnalyticsChart } from "@/components/dashboard/analytics-chart";
+import { DemographicsChart } from "@/components/dashboard/demographics-chart";
+import { RecentUsersTable } from "@/components/dashboard/recent-users-table";
+import { api, ApiError } from "@/lib/api";
+import { toast } from "@/hooks/use-toast";
+import {
+  Users,
+  DollarSign,
+  TrendingUp,
+  Activity,
+  Brain,
+  Sparkles,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 interface Application {
   id: string;
@@ -51,8 +71,10 @@ interface AnalyticsData {
 
 export default function AnalyticsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
-  const [selectedApplication, setSelectedApplication] = useState<string>('');
-  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [selectedApplication, setSelectedApplication] = useState<string>("");
+  const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(
+    null
+  );
   const [isLoadingApps, setIsLoadingApps] = useState(true);
   const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(false);
   const [isGeneratingPersona, setIsGeneratingPersona] = useState(false);
@@ -75,13 +97,13 @@ export default function AnalyticsPage() {
       const response = await api.applications.getAll();
       const apps = response.data || [];
       setApplications(apps);
-      
+
       // Auto-select first application if available
       if (apps.length > 0) {
         setSelectedApplication(apps[0].applicationId);
       }
     } catch (error) {
-      console.error('Failed to fetch applications:', error);
+      console.error("Failed to fetch applications:", error);
       toast({
         title: "Error",
         description: "Failed to load applications. Please try again.",
@@ -98,14 +120,14 @@ export default function AnalyticsPage() {
       const response = await api.analytics.getData(applicationId);
       setAnalyticsData(response.data);
     } catch (error) {
-      console.error('Failed to fetch analytics:', error);
-      
+      console.error("Failed to fetch analytics:", error);
+
       let errorMessage = "Failed to load analytics data. Please try again.";
-      
+
       if (error instanceof ApiError) {
         errorMessage = error.message;
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -138,14 +160,14 @@ export default function AnalyticsPage() {
         description: `"${response.data.name}" has been created based on your analytics data.`,
       });
     } catch (error) {
-      console.error('Failed to generate persona:', error);
-      
+      console.error("Failed to generate persona:", error);
+
       let errorMessage = "Failed to generate persona. Please try again.";
-      
+
       if (error instanceof ApiError) {
         errorMessage = error.message;
       }
-      
+
       toast({
         title: "Error",
         description: errorMessage,
@@ -157,14 +179,14 @@ export default function AnalyticsPage() {
   };
 
   const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
     }).format(amount);
   };
 
   const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('en-US').format(num);
+    return new Intl.NumberFormat("en-US").format(num);
   };
 
   if (isLoadingApps) {
@@ -209,10 +231,13 @@ export default function AnalyticsPage() {
             <div className="rounded-full bg-muted p-6 w-24 h-24 flex items-center justify-center mb-4">
               <Activity className="h-12 w-12 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">No applications found</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              No applications found
+            </h3>
             <p className="text-muted-foreground text-center max-w-md">
-              You need to create at least one application to view analytics data. 
-              Go to the Applications page to create your first application.
+              You need to create at least one application to view analytics
+              data. Go to the Applications page to create your first
+              application.
             </p>
           </CardContent>
         </Card>
@@ -229,7 +254,10 @@ export default function AnalyticsPage() {
             Detailed analytics and performance metrics for your applications.
           </p>
         </div>
-        <Select value={selectedApplication} onValueChange={setSelectedApplication}>
+        <Select
+          value={selectedApplication}
+          onValueChange={setSelectedApplication}
+        >
           <SelectTrigger className="w-[250px]">
             <SelectValue placeholder="Select an application" />
           </SelectTrigger>
@@ -242,7 +270,7 @@ export default function AnalyticsPage() {
           </SelectContent>
         </Select>
         {selectedApplication && analyticsData && (
-          <Button 
+          <Button
             onClick={handleGeneratePersona}
             disabled={isGeneratingPersona}
             className="flex items-center gap-2"
@@ -282,11 +310,15 @@ export default function AnalyticsPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Users</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Users
+                </CardTitle>
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(analyticsData.overview.totalUsers)}</div>
+                <div className="text-2xl font-bold">
+                  {formatNumber(analyticsData.overview.totalUsers)}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Platform users registered
                 </p>
@@ -294,26 +326,37 @@ export default function AnalyticsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Active Users</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Active Users
+                </CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatNumber(analyticsData.overview.activeUsers)}</div>
+                <div className="text-2xl font-bold">
+                  {formatNumber(analyticsData.overview.activeUsers)}
+                </div>
                 <p className="text-xs text-muted-foreground">
-                  {analyticsData.overview.totalUsers > 0 
-                    ? `${Math.round((analyticsData.overview.activeUsers / analyticsData.overview.totalUsers) * 100)}% of total users`
-                    : 'No users yet'
-                  }
+                  {analyticsData.overview.totalUsers > 0
+                    ? `${Math.round(
+                        (analyticsData.overview.activeUsers /
+                          analyticsData.overview.totalUsers) *
+                          100
+                      )}% of total users`
+                    : "No users yet"}
                 </p>
               </CardContent>
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Total Revenue
+                </CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatCurrency(analyticsData.overview.totalRevenue)}</div>
+                <div className="text-2xl font-bold">
+                  {formatCurrency(analyticsData.overview.totalRevenue)}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Monthly recurring revenue
                 </p>
@@ -321,11 +364,15 @@ export default function AnalyticsPage() {
             </Card>
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">Avg. Spend</CardTitle>
+                <CardTitle className="text-sm font-medium">
+                  Avg. Spend
+                </CardTitle>
                 <TrendingUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{formatCurrency(analyticsData.overview.avgSpend)}</div>
+                <div className="text-2xl font-bold">
+                  {formatCurrency(analyticsData.overview.avgSpend)}
+                </div>
                 <p className="text-xs text-muted-foreground">
                   Per user per month
                 </p>
@@ -339,7 +386,7 @@ export default function AnalyticsPage() {
               <TabsTrigger value="demographics">Demographics</TabsTrigger>
               <TabsTrigger value="users">Users</TabsTrigger>
             </TabsList>
-            
+
             <TabsContent value="overview" className="space-y-4">
               <Card>
                 <CardHeader>
@@ -353,7 +400,7 @@ export default function AnalyticsPage() {
                 </CardContent>
               </Card>
             </TabsContent>
-            
+
             <TabsContent value="demographics" className="space-y-4">
               <div className="grid gap-4 md:grid-cols-3">
                 <Card>
@@ -361,8 +408,8 @@ export default function AnalyticsPage() {
                     <CardTitle>Industry Breakdown</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <DemographicsChart 
-                      data={analyticsData.demographics.industry} 
+                    <DemographicsChart
+                      data={analyticsData.demographics.industry}
                       type="industry"
                     />
                   </CardContent>
@@ -372,8 +419,8 @@ export default function AnalyticsPage() {
                     <CardTitle>Age Distribution</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <DemographicsChart 
-                      data={analyticsData.demographics.age} 
+                    <DemographicsChart
+                      data={analyticsData.demographics.age}
                       type="age"
                     />
                   </CardContent>
@@ -383,15 +430,15 @@ export default function AnalyticsPage() {
                     <CardTitle>Location Distribution</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <DemographicsChart 
-                      data={analyticsData.demographics.location} 
+                    <DemographicsChart
+                      data={analyticsData.demographics.location}
                       type="location"
                     />
                   </CardContent>
                 </Card>
               </div>
             </TabsContent>
-            
+
             <TabsContent value="users" className="space-y-4">
               <Card>
                 <CardHeader>
