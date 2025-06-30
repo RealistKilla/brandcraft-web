@@ -8,7 +8,10 @@ export async function GET() {
       orderBy: { id: "asc" },
     });
 
-    return NextResponse.json(ageRanges, { status: 200 });
+    return NextResponse.json(
+      { success: true, data: ageRanges },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error fetching age ranges:", error);
     return NextResponse.json(
