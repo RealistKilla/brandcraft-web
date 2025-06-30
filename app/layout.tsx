@@ -1,17 +1,17 @@
 import "./globals.css";
 import type { Metadata, Viewport } from "next";
-import { Bakbak_One, DM_Sans } from "next/font/google";
+import { Inter, DM_Sans } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";
 import { AuthProvider } from "@/components/providers/auth-provider";
 
-const bakbak = Bakbak_One({
-  weight: ["400"],
+const inter = Inter({
+  weight: ["400", "500", "600", "700"],
   display: "swap",
   subsets: ["latin"],
-  variable: "--font-bakbak",
+  variable: "--font-inter",
 });
 
 const dmSans = DM_Sans({
@@ -57,7 +57,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body
-        className={`${bakbak.className} ${dmSans.className} min-h-screen flex flex-col items-center antialiased`}
+        className={`${inter.className} ${dmSans.className} min-h-screen flex flex-col items-center antialiased`}
       >
         <ThemeProvider
           attribute="class"

@@ -10,7 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        bakbak: ["var(--font-bakbak)"],
+        sans: ["Inter", "system-ui", "sans-serif"],
+        heading: ["Inter", "system-ui", "sans-serif"],
         "dm-sans": ["var(--font-dm-sans)"],
       },
       backgroundImage: {

@@ -78,8 +78,8 @@ export function Features() {
               <div className="rounded-full bg-primary/10 p-3">
                 <feature.icon className="h-6 w-6 text-primary" />
               </div>
-              <h3 className="text-xl font-bold">{feature.title}</h3>
-              <p className="text-center text-muted-foreground">
+              <h3 className="text-xl font-bold font-heading">{feature.title}</h3>
+              <p className="text-center text-muted-foreground font-dm-sans">
                 {feature.description}
               </p>
             </motion.div>
