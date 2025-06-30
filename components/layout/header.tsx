@@ -88,8 +88,11 @@ export function Header() {
 
         <div className="flex items-center space-x-2">
           <ModeToggle />
+          <Button variant="outline" asChild className="hidden md:flex">
+            <Link href="/auth/signin">Sign In</Link>
+          </Button>
           <Button asChild className="hidden md:flex">
-            <Link href="/dashboard">Dashboard</Link>
+            <Link href="/auth/signup">Sign Up</Link>
           </Button>
           <Button
             variant="outline"
@@ -134,6 +137,14 @@ export function Header() {
                   </Link>
                 ))}
               </nav>
+              <div className="flex flex-col space-y-2 mt-4 pt-4 border-t">
+                <Button variant="outline" asChild>
+                  <Link href="/auth/signin">Sign In</Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/auth/signup">Sign Up</Link>
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}

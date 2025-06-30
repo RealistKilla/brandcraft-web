@@ -99,7 +99,7 @@ export default function PricingPage() {
             </CardContent>
             <CardFooter>
               <Button className="w-full" asChild>
-                <Link href="/dashboard">
+                <Link href="/auth/signup">
                   {tier.price === "Custom" ? "Contact Sales" : "Start Free Trial"}
                 </Link>
               </Button>
