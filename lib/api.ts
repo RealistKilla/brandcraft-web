@@ -81,6 +81,10 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+  analytics: {
+    getData: (applicationId: string) => 
+      apiRequest(`/analytics?applicationId=${applicationId}`),
+  },
 };
 
 export { ApiError };

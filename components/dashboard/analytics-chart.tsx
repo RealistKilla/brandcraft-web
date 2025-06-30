@@ -2,8 +2,9 @@
 
 import React from "react";
 import {
-  AreaChart,
-  Area,
+  ComposedChart,
+  Line,
+  Bar,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -11,21 +12,27 @@ import {
   ResponsiveContainer,
 } from "recharts";
 
-const data = [
-  { name: "Week 1", visitors: 4000, pageViews: 8400 },
-  { name: "Week 2", visitors: 3000, pageViews: 7800 },
-  { name: "Week 3", visitors: 5000, pageViews: 9800 },
-  { name: "Week 4", visitors: 8000, pageViews: 12000 },
-  { name: "Week 5", visitors: 6000, pageViews: 11000 },
-  { name: "Week 6", visitors: 7000, pageViews: 13000 },
-  { name: "Week 7", visitors: 9000, pageViews: 15000 },
-  { name: "Week 8", visitors: 10000, pageViews: 17000 },
-];
+interface AnalyticsChartProps {
+  data: Array<{
+    date: string;
+    signups: number;
+    revenue: number;
+  }>;
+}
 
-export function AnalyticsChart() {
+export function AnalyticsChart({ data }: AnalyticsChartProps) {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  };
+
+  const formatCurrency = (value: number) => {
+    return `$${value.toFixed(0)}`;
+  };
+
   return (
     <ResponsiveContainer width="100%" height="100%">
-      <AreaChart
+      <ComposedChart
         data={data}
         margin={{
           top: 10,
@@ -35,10 +42,69 @@ export function AnalyticsChart() {
         }}
       >
         <CartesianGrid strokeDasharray="3 3" vertical={false} />
-        <XAxis dataKey="name" stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-        <YAxis stroke="#888888" fontSize={12} tickLine={false} axisLine={false} />
-        <Tooltip />
-        <Area
+        <XAxis 
+          dataKey="date" 
+          stroke="#888888" 
+          fontSize={12} 
+          tickLine={false} 
+          axisLine={false}
+          tickFormatter={formatDate}
+        />
+        <YAxis 
+          yAxisId="left"
+          stroke="#888888" 
+          fontSize={12} 
+          tickLine={false} 
+          axisLine={false}
+        />
+        <YAxis 
+          yAxisId="right"
+          orientation="right"
+          stroke="#888888" 
+          fontSize={12} 
+          tickLine={false} 
+          axisLine={false}
+          tickFormatter={formatCurrency}
+        />
+        <Tooltip 
+          content={({ active, payload, label }) => {
+            if (active && payload && payload.length) {
+              return (
+                <div className="bg-background border rounded-lg p-3 shadow-lg">
+                  <p className="font-medium">{formatDate(label)}</p>
+                  <div className="space-y-1 mt-2">
+                    {payload.map((entry, index) => (
+                      <p key={index} className="text-sm" style={{ color: entry.color }}>
+                        {entry.name}: {entry.name === 'Revenue' ? formatCurrency(entry.value as number) : entry.value}
+                      </p>
+                    ))}
+                  </div>
+                </div>
+              );
+            }
+            return null;
+          }}
+        />
+        <Bar
+          yAxisId="left"
+          dataKey="signups"
+          name="Signups"
+          fill="hsl(var(--chart-1))"
+          opacity={0.8}
+        />
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="revenue"
+          name="Revenue"
+          stroke="hsl(var(--chart-2))"
+          strokeWidth={2}
+          dot={{ fill: "hsl(var(--chart-2))", strokeWidth: 2, r: 4 }}
+        />
+      </ComposedChart>
+    </ResponsiveContainer>
+  );
+}
           type="monotone"
           dataKey="pageViews"
           stackId="1"
