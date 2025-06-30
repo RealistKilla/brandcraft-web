@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import Cookies from "js-cookie";
 import { api } from "@/lib/api";
 
 interface User {
@@ -43,11 +44,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   const refreshUser = async () => {
+    // Check if auth token cookie exists before making API call
+    const authToken = Cookies.get('auth-token');
+    if (!authToken) {
+      setUser(null);
+      setLoading(false);
+      return;
+    }
+
     try {
       const response = await api.auth.getUser();
       setUser(response.user);
     } catch (error) {
       console.error("Failed to fetch user:", error);
+      // Clear the auth token cookie if the session is invalid
+      Cookies.remove('auth-token');
       setUser(null);
     } finally {
       setLoading(false);
