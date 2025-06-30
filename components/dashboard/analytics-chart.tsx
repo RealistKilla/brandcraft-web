@@ -105,20 +105,3 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
     </ResponsiveContainer>
   );
 }
-          type="monotone"
-          dataKey="pageViews"
-          stackId="1"
-          stroke="hsl(var(--chart-1))"
-          fill="hsl(var(--chart-1) / 0.2)"
-        />
-        <Area
-          type="monotone"
-          dataKey="visitors"
-          stackId="2"
-          stroke="hsl(var(--chart-2))"
-          fill="hsl(var(--chart-2) / 0.2)"
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
-}
