@@ -149,8 +149,8 @@ export function SignUpFlow() {
                             }`}
                           >
                             <div className="flex items-center space-x-4">
-                              <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/20">
-                                <Building2 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+                              <div className="p-3 rounded-lg bg-blue-100 dark:bg-blue-900/20"> <User className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                               
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-semibold">Individual</h3>
@@ -172,7 +172,7 @@ export function SignUpFlow() {
                           >
                             <div className="flex items-center space-x-4">
                               <div className="p-3 rounded-lg bg-purple-100 dark:bg-purple-900/20">
-                                <User className="h-8 w-8 text-purple-600 dark:text-purple-400" />
+                                <Building2 className="h-8 w-8 text-blue-600 dark:text-blue-400" />
                               </div>
                               <div className="flex-1">
                                 <h3 className="font-semibold">Organization</h3>
