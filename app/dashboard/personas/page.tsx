@@ -5,14 +5,17 @@ import { Metadata } from 'next';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Plus, Users, Target, Brain, Calendar, User } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Plus, Users, Target, Brain, Calendar, User, Sparkles } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { api, ApiError } from '@/lib/api';
 import { format } from 'date-fns';
+
+interface Application {
+  id: string;
+  name: string;
+  applicationId: string;
+}
 
 interface Persona {
   id: string;
@@ -52,20 +55,16 @@ interface Persona {
 
 export default function PersonasPage() {
   const [personas, setPersonas] = useState<Persona[]>([]);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-  const [newPersona, setNewPersona] = useState({
-    name: '',
-    description: '',
-    ageRange: '',
-    income: '',
-    location: '',
-  });
-  const [isCreating, setIsCreating] = useState(false);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [selectedApplication, setSelectedApplication] = useState<string>('');
+  const [isGenerating, setIsGenerating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingApps, setIsLoadingApps] = useState(true);
 
   // Fetch personas on component mount
   useEffect(() => {
     fetchPersonas();
+    fetchApplications();
   }, []);
 
   const fetchPersonas = async () => {
@@ -85,64 +84,60 @@ export default function PersonasPage() {
     }
   };
 
-  const handleCreatePersona = async () => {
-    if (!newPersona.name.trim() || !newPersona.description.trim()) {
+  const fetchApplications = async () => {
+    try {
+      setIsLoadingApps(true);
+      const response = await api.applications.getAll();
+      const apps = response.data || [];
+      setApplications(apps);
+      
+      // Auto-select first application if available
+      if (apps.length > 0) {
+        setSelectedApplication(apps[0].applicationId);
+      }
+    } catch (error) {
+      console.error('Failed to fetch applications:', error);
       toast({
         title: "Error",
-        description: "Please fill in the persona name and description.",
+        description: "Failed to load applications. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoadingApps(false);
+    }
+  };
+
+  const handleGeneratePersona = async () => {
+    if (!selectedApplication) {
+      toast({
+        title: "Error",
+        description: "Please select an application to generate persona from.",
         variant: "destructive",
       });
       return;
     }
 
-    setIsCreating(true);
+    setIsGenerating(true);
 
     try {
-      const response = await api.personas.create({
-        name: newPersona.name.trim(),
-        description: newPersona.description.trim(),
-        demographics: {
-          ageRange: newPersona.ageRange || 'Not specified',
-          income: newPersona.income || 'Not specified',
-          location: newPersona.location || 'Not specified',
-          education: 'Not specified',
-          occupation: 'Not specified'
-        },
-        behaviors: {
-          digitalHabits: [],
-          purchasingBehavior: [],
-          communicationPreferences: [],
-          painPoints: [],
-          motivations: []
-        },
-        preferences: {
-          contentTypes: [],
-          channels: [],
-          messagingTone: 'Professional',
-          valuePropositions: [],
-          brandAttributes: []
-        }
+      const response = await api.personas.generate({
+        applicationId: selectedApplication,
       });
 
       // Add the new persona to the list
-      setPersonas(prev => [response.data, ...prev]);
-      setNewPersona({
-        name: '',
-        description: '',
-        ageRange: '',
-        income: '',
-        location: '',
-      });
-      setIsCreateModalOpen(false);
+      setPersonas(prev => [{
+        ...response.data,
+        _count: { campaigns: 0 }
+      }, ...prev]);
       
       toast({
-        title: "Persona created",
-        description: `${response.data.name} has been created successfully.`,
+        title: "AI Persona Generated!",
+        description: `"${response.data.name}" has been created based on your analytics data.`,
       });
     } catch (error) {
-      console.error('Create persona error:', error);
+      console.error('Generate persona error:', error);
       
-      let errorMessage = "Failed to create persona. Please try again.";
+      let errorMessage = "Failed to generate persona. Please try again.";
       
       if (error instanceof ApiError) {
         errorMessage = error.message;
@@ -154,7 +149,7 @@ export default function PersonasPage() {
         variant: "destructive",
       });
     } finally {
-      setIsCreating(false);
+      setIsGenerating(false);
     }
   };
 
@@ -172,7 +167,7 @@ export default function PersonasPage() {
     return interests;
   };
 
-  if (isLoading) {
+  if (isLoading || isLoadingApps) {
     return (
       <div className="space-y-8">
         <div className="flex items-center justify-between">
@@ -228,91 +223,54 @@ export default function PersonasPage() {
             Create and manage customer personas to better understand your target audience.
           </p>
         </div>
+        {applications.length > 0 && (
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <label className="text-sm font-medium">Generate from:</label>
+              <Select value={selectedApplication} onValueChange={setSelectedApplication}>
+                <SelectTrigger className="w-[250px]">
+                  <SelectValue placeholder="Select an application" />
+                </SelectTrigger>
+                <SelectContent>
+                  {applications.map((app) => (
+                    <SelectItem key={app.applicationId} value={app.applicationId}>
+                      {app.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {/* Create Persona Card */}
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
-          <DialogTrigger asChild>
-            <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer transition-colors">
-              <CardContent className="flex flex-col items-center justify-center p-8 text-center">
-                <div className="rounded-full bg-muted p-4 mb-4">
-                  <Plus className="h-8 w-8 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-semibold mb-2">Create Persona</h3>
-                <p className="text-sm text-muted-foreground">
-                  Create a new customer persona to target your marketing efforts
-                </p>
-              </CardContent>
-            </Card>
-          </DialogTrigger>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>Create New Persona</DialogTitle>
-              <DialogDescription>
-                Create a new customer persona. You can add more details later.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="personaName">Persona Name</Label>
-                <Input
-                  id="personaName"
-                  placeholder="e.g., Tech-Savvy Millennials"
-                  value={newPersona.name}
-                  onChange={(e) => setNewPersona(prev => ({ ...prev, name: e.target.value }))}
-                />
-              </div>
-              <div>
-                <Label htmlFor="personaDescription">Description</Label>
-                <Textarea
-                  id="personaDescription"
-                  placeholder="Brief description of this persona..."
-                  value={newPersona.description}
-                  onChange={(e) => setNewPersona(prev => ({ ...prev, description: e.target.value }))}
-                  className="resize-none"
-                />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="ageRange">Age Range (Optional)</Label>
-                  <Input
-                    id="ageRange"
-                    placeholder="e.g., 25-35"
-                    value={newPersona.ageRange}
-                    onChange={(e) => setNewPersona(prev => ({ ...prev, ageRange: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="income">Income (Optional)</Label>
-                  <Input
-                    id="income"
-                    placeholder="e.g., $50k-$80k"
-                    value={newPersona.income}
-                    onChange={(e) => setNewPersona(prev => ({ ...prev, income: e.target.value }))}
-                  />
-                </div>
-              </div>
-              <div>
-                <Label htmlFor="location">Location (Optional)</Label>
-                <Input
-                  id="location"
-                  placeholder="e.g., Urban areas"
-                  value={newPersona.location}
-                  onChange={(e) => setNewPersona(prev => ({ ...prev, location: e.target.value }))}
-                />
-              </div>
+        <Card 
+          className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer transition-colors"
+          onClick={handleGeneratePersona}
+        >
+          <CardContent className="flex flex-col items-center justify-center p-8 text-center">
+            <div className="rounded-full bg-muted p-4 mb-4">
+              {isGenerating ? (
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-current border-t-transparent" />
+              ) : (
+                <Sparkles className="h-8 w-8 text-muted-foreground" />
+              )}
             </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
-                Cancel
-              </Button>
-              <Button onClick={handleCreatePersona} disabled={isCreating}>
-                {isCreating ? "Creating..." : "Create Persona"}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+            <h3 className="text-lg font-semibold mb-2">
+              {isGenerating ? "Generating..." : "Generate AI Persona"}
+            </h3>
+            <p className="text-sm text-muted-foreground">
+              {isGenerating 
+                ? "Creating persona from your analytics data..." 
+                : applications.length > 0 
+                  ? "Use AI to create a persona based on your platform data"
+                  : "Create an application first to generate personas"
+              }
+            </p>
+          </CardContent>
+        </Card>
 
         {/* Persona Cards */}
         {personas.map((persona) => (
@@ -367,15 +325,23 @@ export default function PersonasPage() {
         ))}
       </div>
 
-      {personas.length === 0 && (
+      {personas.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <div className="rounded-full bg-muted p-6 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-            <Users className="h-12 w-12 text-muted-foreground" />
+            <Brain className="h-12 w-12 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-semibold mb-2">No personas yet</h3>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-            Create your first customer persona to start targeting your marketing efforts more effectively.
+            {applications.length > 0 
+              ? "Generate your first AI-powered persona based on your platform's user data."
+              : "Create an application first, then generate personas from your user analytics."
+            }
           </p>
+          {applications.length === 0 && (
+            <Button variant="outline" asChild>
+              <a href="/dashboard/applications">Create Application</a>
+            </Button>
+          )}
         </div>
       )}
 
@@ -393,9 +359,9 @@ export default function PersonasPage() {
           <CardContent>
             <div className="space-y-4">
               <div className="p-4 rounded-lg bg-muted">
-                <h4 className="font-medium mb-2">Generate from Analytics</h4>
+                <h4 className="font-medium mb-2">View Analytics Data</h4>
                 <p className="text-sm text-muted-foreground mb-3">
-                  Use your platform's user data to automatically generate new personas with AI insights.
+                  Review your platform's user data and analytics before generating new personas.
                 </p>
                 <Button variant="outline" size="sm" asChild>
                   <a href="/dashboard/analytics">Go to Analytics</a>
