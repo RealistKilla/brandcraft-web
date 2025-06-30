@@ -6,6 +6,9 @@ const signUpSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters'),
   email: z.string().email('Invalid email address'),
   password: z.string().min(8, 'Password must be at least 8 characters'),
+  accountType: z.enum(['individual', 'organization']),
+  organizationName: z.string().optional(),
+  existingOrganization: z.string().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -15,11 +18,14 @@ export async function POST(request: NextRequest) {
     // Validate input
     const validatedData = signUpSchema.parse(body);
     
-    // Create user
+    // Create user with organization logic
     const user = await createUser(
       validatedData.email,
       validatedData.password,
-      validatedData.name
+      validatedData.name,
+      validatedData.accountType,
+      validatedData.organizationName,
+      validatedData.existingOrganization
     );
 
     // Generate JWT token

@@ -46,7 +46,14 @@ async function apiRequest<T = any>(
 
 export const api = {
   auth: {
-    signUp: (data: { name: string; email: string; password: string }) =>
+    signUp: (data: { 
+      name: string; 
+      email: string; 
+      password: string;
+      accountType: string;
+      organizationName?: string;
+      existingOrganization?: string;
+    }) =>
       apiRequest('/auth/signup', {
         method: 'POST',
         body: JSON.stringify(data),

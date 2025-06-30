@@ -55,7 +55,10 @@ export function verifyToken(token: string): AuthUser | null {
 export async function createUser(
   email: string,
   password: string,
-  name: string
+  name: string,
+  accountType: string,
+  organizationName?: string,
+  existingOrganization?: string
 ) {
   // Check if user already exists
   const existingUser = await prisma.user.findUnique({
@@ -69,12 +72,50 @@ export async function createUser(
   // Hash password
   const hashedPassword = await hashPassword(password);
 
-  // Create organization for the user
-  const organization = await prisma.organization.create({
-    data: {
-      name: `${name}'s Organization`,
-    },
-  });
+  let organization;
+  let userRole: "ADMIN" | "MEMBER" = "MEMBER";
+
+  if (accountType === "organization") {
+    // Creating a new organization
+    if (!organizationName) {
+      throw new Error("Organization name is required for organization accounts");
+    }
+
+    organization = await prisma.organization.create({
+      data: {
+        name: organizationName,
+      },
+    });
+    userRole = "ADMIN"; // Organization creator is admin
+  } else {
+    // Individual account
+    if (existingOrganization) {
+      // Try to join existing organization
+      const existingOrg = await prisma.organization.findFirst({
+        where: {
+          name: {
+            equals: existingOrganization,
+            mode: 'insensitive', // Case-insensitive comparison
+          },
+        },
+      });
+
+      if (!existingOrg) {
+        throw new Error(`Organization "${existingOrganization}" does not exist. Please check the name or contact your organization administrator.`);
+      }
+
+      organization = existingOrg;
+      userRole = "MEMBER"; // Joining existing org as member
+    } else {
+      // Create personal organization
+      organization = await prisma.organization.create({
+        data: {
+          name: `${name}'s Organization`,
+        },
+      });
+      userRole = "ADMIN"; // Personal org creator is admin
+    }
+  }
 
   // Create user
   const user = await prisma.user.create({
@@ -83,7 +124,7 @@ export async function createUser(
       password: hashedPassword,
       name,
       orgId: organization.id,
-      role: "ADMIN",
+      role: userRole,
     },
     include: {
       organization: true,

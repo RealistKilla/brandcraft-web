@@ -12,13 +12,18 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
+  FormDescription,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { toast } from "@/hooks/use-toast";
 import { api, ApiError } from "@/lib/api";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
+  accountType: z.enum(["individual", "organization"], {
+    required_error: "Please select an account type.",
+  }),
   name: z.string().min(2, {
     message: "Name must be at least 2 characters.",
   }),
@@ -29,9 +34,19 @@ const formSchema = z.object({
     message: "Password must be at least 8 characters.",
   }),
   confirmPassword: z.string(),
+  organizationName: z.string().optional(),
+  existingOrganization: z.string().optional(),
 }).refine((data) => data.password === data.confirmPassword, {
   message: "Passwords don't match",
   path: ["confirmPassword"],
+}).refine((data) => {
+  if (data.accountType === "organization" && !data.organizationName) {
+    return false;
+  }
+  return true;
+}, {
+  message: "Organization name is required when creating an organization account",
+  path: ["organizationName"],
 });
 
 export function SignUpForm() {
@@ -41,12 +56,17 @@ export function SignUpForm() {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      accountType: "individual",
       name: "",
       email: "",
       password: "",
       confirmPassword: "",
+      organizationName: "",
+      existingOrganization: "",
     },
   });
+
+  const watchAccountType = form.watch("accountType");
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setIsLoading(true);
@@ -56,6 +76,9 @@ export function SignUpForm() {
         name: values.name,
         email: values.email,
         password: values.password,
+        accountType: values.accountType,
+        organizationName: values.organizationName,
+        existingOrganization: values.existingOrganization,
       });
 
       toast({
@@ -89,10 +112,45 @@ export function SignUpForm() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
           control={form.control}
+          name="accountType"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Account Type</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-2"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="individual" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Individual Account
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="organization" />
+                    </FormControl>
+                    <FormLabel className="font-normal">
+                      Organization Account
+                    </FormLabel>
+                  </FormItem>
+                </RadioGroup>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>Full Name</FormLabel>
               <FormControl>
                 <Input placeholder="John Doe" {...field} />
               </FormControl>
@@ -100,6 +158,7 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="email"
@@ -113,6 +172,45 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
+
+        {watchAccountType === "organization" && (
+          <FormField
+            control={form.control}
+            name="organizationName"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Organization Name</FormLabel>
+                <FormControl>
+                  <Input placeholder="Acme Corporation" {...field} />
+                </FormControl>
+                <FormDescription>
+                  This will create a new organization account.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
+        {watchAccountType === "individual" && (
+          <FormField
+            control={form.control}
+            name="existingOrganization"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Join Existing Organization (Optional)</FormLabel>
+                <FormControl>
+                  <Input placeholder="Organization name" {...field} />
+                </FormControl>
+                <FormDescription>
+                  Leave blank to create your own personal workspace, or enter an organization name to join an existing one.
+                </FormDescription>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        )}
+
         <FormField
           control={form.control}
           name="password"
@@ -126,6 +224,7 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
+
         <FormField
           control={form.control}
           name="confirmPassword"
@@ -139,6 +238,7 @@ export function SignUpForm() {
             </FormItem>
           )}
         />
+
         <Button type="submit" className="w-full" disabled={isLoading}>
           {isLoading ? "Creating account..." : "Create account"}
         </Button>

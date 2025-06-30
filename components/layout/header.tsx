@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/components/providers/auth-provider";
 
 interface NavItem {
   label: string;
@@ -24,6 +25,7 @@ const navItems: NavItem[] = [
 export function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const { user, loading } = useAuth();
   const pathname = usePathname();
 
   useEffect(() => {
@@ -88,12 +90,24 @@ export function Header() {
 
         <div className="flex items-center space-x-2">
           <ModeToggle />
-          <Button variant="outline" asChild className="hidden md:flex">
-            <Link href="/auth/signin">Sign In</Link>
-          </Button>
-          <Button asChild className="hidden md:flex">
-            <Link href="/auth/signup">Sign Up</Link>
-          </Button>
+          {!loading && (
+            <>
+              {user ? (
+                <Button asChild className="hidden md:flex">
+                  <Link href="/dashboard">Dashboard</Link>
+                </Button>
+              ) : (
+                <>
+                  <Button variant="outline" asChild className="hidden md:flex">
+                    <Link href="/auth/signin">Sign In</Link>
+                  </Button>
+                  <Button asChild className="hidden md:flex">
+                    <Link href="/auth/signup">Sign Up</Link>
+                  </Button>
+                </>
+              )}
+            </>
+          )}
           <Button
             variant="outline"
             size="icon"
@@ -138,12 +152,24 @@ export function Header() {
                 ))}
               </nav>
               <div className="flex flex-col space-y-2 mt-4 pt-4 border-t">
-                <Button variant="outline" asChild>
-                  <Link href="/auth/signin">Sign In</Link>
-                </Button>
-                <Button asChild>
-                  <Link href="/auth/signup">Sign Up</Link>
-                </Button>
+                {!loading && (
+                  <>
+                    {user ? (
+                      <Button asChild>
+                        <Link href="/dashboard">Dashboard</Link>
+                      </Button>
+                    ) : (
+                      <>
+                        <Button variant="outline" asChild>
+                          <Link href="/auth/signin">Sign In</Link>
+                        </Button>
+                        <Button asChild>
+                          <Link href="/auth/signup">Sign Up</Link>
+                        </Button>
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             </div>
           </motion.div>
