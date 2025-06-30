@@ -27,17 +27,25 @@ export async function POST(
     );
   }
 
-  await prisma.platformUser.create({
-    data: {
-      age: body.age,
-      company: body.company,
-      industry: body.industry,
-      jobTitle: body.jobTitle,
-      orgId: validApp.orgId,
-      location: body.location,
-      monthlySpendUsd: body.monthlySpendUsd,
-    },
-  });
+  try {
+    await prisma.platformUser.create({
+      data: {
+        age: body.age,
+        company: body.company,
+        industry: body.industry,
+        jobTitle: body.jobTitle,
+        orgId: validApp.orgId,
+        location: body.location,
+        monthlySpendUsd: body.monthlySpendUsd,
+      },
+    });
+  } catch (error) {
+    console.error("Error adding platform user:", error);
+    return NextResponse.json(
+      { error: "Failed to add platform user" },
+      { status: 500 }
+    );
+  }
 
   // Here you would typically add the user to the platform in your database
   // For demonstration, we will just return a success message
