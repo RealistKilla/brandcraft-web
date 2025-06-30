@@ -196,12 +196,14 @@ export default function ContentPage() {
             AI-generated content optimized for different platforms and campaigns.
           </p>
         </div>
-        <Button asChild>
-          <a href="/dashboard/campaigns">
-            <Plus className="mr-2 h-4 w-4" />
-            Generate Content
-          </a>
-        </Button>
+        {contentItems.length > 0 && (
+          <Button asChild>
+            <a href="/dashboard/campaigns">
+              <Plus className="mr-2 h-4 w-4" />
+              Generate Content
+            </a>
+          </Button>
+        )}
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -267,21 +269,23 @@ export default function ContentPage() {
         
         <TabsContent value="all" className="space-y-4">
           {contentItems.length === 0 ? (
-            <div className="text-center py-12">
-              <div className="rounded-full bg-muted p-6 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-                <FileText className="h-12 w-12 text-muted-foreground" />
-              </div>
-              <h3 className="text-lg font-semibold mb-2">No content yet</h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                Generate your first AI-powered content from your campaigns to start building your content library.
-              </p>
-              <Button asChild>
-                <a href="/dashboard/campaigns">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Generate Content
-                </a>
-              </Button>
-            </div>
+            <Card className="border-2 border-dashed border-muted-foreground/25">
+              <CardContent className="flex flex-col items-center justify-center py-16 text-center">
+                <div className="rounded-full bg-muted p-6 w-24 h-24 flex items-center justify-center mb-4">
+                  <FileText className="h-12 w-12 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No content yet</h3>
+                <p className="text-muted-foreground mb-6 max-w-md">
+                  Generate your first AI-powered content from your campaigns to start building your content library.
+                </p>
+                <Button asChild>
+                  <a href="/dashboard/campaigns">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Generate Content
+                  </a>
+                </Button>
+              </CardContent>
+            </Card>
           ) : (
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {contentItems.map((item) => {

@@ -195,11 +195,14 @@ export default function CampaignsPage() {
 
       toast({
         title: "Content Generated!",
-        description: `Created ${response.data.contentCount} pieces of content for ${selectedPlatforms.length} platforms.`,
+        description: `Created ${response.data.contentCount} pieces of content for ${selectedPlatforms.length} platform${selectedPlatforms.length > 1 ? 's' : ''}.`,
       });
       
       setIsContentModalOpen(false);
       setSelectedCampaign(null);
+      setContentTitle('');
+      setAdditionalContext('');
+      setSelectedPlatforms([]);
     } catch (error) {
       console.error('Generate content error:', error);
       

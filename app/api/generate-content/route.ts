@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
         Platforms: ${platforms.join(', ')}
         Additional Context: ${additionalContext || 'None provided'}
         
-        Create optimized content for each platform that:
+        Create optimized content for each of these platforms: ${platforms.join(', ')}. The content should:
         1. Aligns with the campaign strategy and persona preferences
         2. Follows platform-specific best practices and formats
         3. Uses appropriate tone and messaging for the target audience
@@ -126,6 +126,8 @@ export async function POST(request: NextRequest) {
         - Includes compelling visuals descriptions
         - Has clear calls-to-action
         - Optimizes for platform algorithms and engagement
+        
+        IMPORTANT: Only generate content for these specific platforms: ${platforms.join(', ')}
       `,
     });
 
@@ -133,6 +135,11 @@ export async function POST(request: NextRequest) {
     const savedContent = [];
     
     for (const [platform, content] of Object.entries(result.object.platforms)) {
+      // Only process platforms that were requested
+      if (!platforms.includes(platform)) {
+        continue;
+      }
+      
       const contentRecord = await prisma.content.create({
         data: {
           title: `${title} - ${platform}`,
@@ -166,6 +173,11 @@ export async function POST(request: NextRequest) {
           campaign: {
             select: {
               name: true,
+              persona: {
+                select: {
+                  name: true,
+                },
+              },
             },
           },
         },
@@ -199,7 +211,7 @@ export async function POST(request: NextRequest) {
       {
         success: false,
         message: 'Failed to generate content',
-        error: process.env.NODE_ENV === 'development' ? error.message : undefined,
+        error: process.env.NODE_ENV === 'development' ? error.message : 'An unexpected error occurred',
       },
       { status: 500 }
     );
