@@ -155,7 +155,7 @@ export function SignUpFlow() {
                               <div className="flex-1">
                                 <h3 className="font-semibold">Individual</h3>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                  You want this product for personal use.
+                                  You want this product for personal use or you are a user within an organization.
                                 </p>
                               </div>
                             </div>
@@ -177,7 +177,7 @@ export function SignUpFlow() {
                               <div className="flex-1">
                                 <h3 className="font-semibold">Organization</h3>
                                 <p className="text-sm text-muted-foreground mt-1">
-                                  You're an organization
+                                  You would like to set up your organization.
                                 </p>
                               </div>
                             </div>
