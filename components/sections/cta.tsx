@@ -9,12 +9,9 @@ import Link from "next/link";
 export function CTA() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.2 });
-  
+
   return (
-    <section
-      ref={ref}
-      className="w-full py-16 md:py-24 lg:py-32"
-    >
+    <section ref={ref} className="w-full py-16 md:py-24 lg:py-32">
       <div className="container px-4 md:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -27,8 +24,9 @@ export function CTA() {
               Ready to get started?
             </h2>
             <p className="mx-auto max-w-[700px] text-muted-foreground md:text-xl">
-              Start building your next project with our modern Next.js 15 template.
-              It's fast, flexible, and designed for a great developer experience.
+              Start building your next project with our modern Next.js 15
+              template. It&apos;s fast, flexible, and designed for a great
+              developer experience.
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-4">
