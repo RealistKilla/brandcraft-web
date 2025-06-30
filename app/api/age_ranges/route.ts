@@ -8,8 +8,16 @@ export async function GET() {
       orderBy: { id: "asc" },
     });
 
+    console.log("Fetched age ranges:", ageRanges);
+
+    const safeAgeRanges = ageRanges.map((ageRange) => ({
+      ...ageRange,
+      id: ageRange.id.toString(),
+      createdAt: ageRange.createdAt.toISOString(),
+    }));
+
     return NextResponse.json(
-      { success: true, data: ageRanges },
+      { success: true, data: safeAgeRanges },
       { status: 200 }
     );
   } catch (error) {
