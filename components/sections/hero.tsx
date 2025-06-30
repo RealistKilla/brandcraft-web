@@ -20,7 +20,7 @@ export function Hero() {
       <div className="container mx-auto px-4 md:px-6 relative">
         <div className="flex flex-col items-center text-center max-w-3xl mx-auto">
           <motion.h1
-            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight md:leading-tight"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-tight md:leading-tight font-heading"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
@@ -33,7 +33,7 @@ export function Hero() {
           </motion.h1>
 
           <motion.p
-            className="mt-6 text-xl text-muted-foreground max-w-2xl"
+            className="mt-6 text-xl text-muted-foreground max-w-2xl font-dm-sans"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.4 }}
@@ -51,7 +51,7 @@ export function Hero() {
           >
             <Button
               size="lg"
-              className="h-12 px-8 font-medium rounded-full"
+              className="h-12 px-8 font-medium rounded-full font-heading"
               asChild
             >
               <Link href="/auth/signup">
@@ -61,7 +61,7 @@ export function Hero() {
             <Button
               variant="outline"
               size="lg"
-              className="h-12 px-8 font-medium rounded-full"
+              className="h-12 px-8 font-medium rounded-full font-heading"
               asChild
             >
               <Link href="/features">Watch Demo</Link>
@@ -77,7 +77,7 @@ export function Hero() {
             {["Twitter", "Instagram", "Facebook", "LinkedIn"].map(
               (platform) => (
                 <div key={platform} className="flex flex-col items-center">
-                  <p className="text-base font-medium text-muted-foreground">
+                  <p className="text-base font-medium text-muted-foreground font-heading">
                     {platform}
                   </p>
                 </div>
