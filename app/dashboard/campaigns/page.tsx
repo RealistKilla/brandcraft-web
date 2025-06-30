@@ -6,11 +6,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Plus, Target, Calendar, DollarSign, TrendingUp, Users, FileText, Sparkles, Eye } from 'lucide-react';
+import { Plus, Target, Calendar, DollarSign, TrendingUp, Users, FileText, Sparkles, Eye, Brain } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 import { api, ApiError } from '@/lib/api';
 import { format } from 'date-fns';
@@ -64,20 +62,11 @@ export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [personas, setPersonas] = useState<Persona[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isGenerateModalOpen, setIsGenerateModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [selectedCampaign, setSelectedCampaign] = useState<Campaign | null>(null);
-  const [isCreating, setIsCreating] = useState(false);
-  
-  const [newCampaign, setNewCampaign] = useState({
-    name: '',
-    description: '',
-    strategy: '',
-    personaId: '',
-    startDate: '',
-    endDate: '',
-    budget: '',
-  });
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [selectedPersonaId, setSelectedPersonaId] = useState<string>('');
 
   useEffect(() => {
     fetchCampaigns();
@@ -110,49 +99,35 @@ export default function CampaignsPage() {
     }
   };
 
-  const handleCreateCampaign = async () => {
-    if (!newCampaign.name || !newCampaign.description || !newCampaign.strategy || !newCampaign.personaId) {
+  const handleGenerateCampaign = async () => {
+    if (!selectedPersonaId) {
       toast({
         title: "Error",
-        description: "Please fill in all required fields.",
+        description: "Please select a persona to generate a campaign for.",
         variant: "destructive",
       });
       return;
     }
 
-    setIsCreating(true);
+    setIsGenerating(true);
 
     try {
-      const response = await api.campaigns.create({
-        name: newCampaign.name,
-        description: newCampaign.description,
-        strategy: newCampaign.strategy,
-        personaId: newCampaign.personaId,
-        startDate: newCampaign.startDate || undefined,
-        endDate: newCampaign.endDate || undefined,
-        budget: newCampaign.budget ? parseFloat(newCampaign.budget) : undefined,
+      const response = await api.campaigns.generate({
+        personaId: selectedPersonaId,
       });
 
       setCampaigns(prev => [{ ...response.data, _count: { contents: 0 } }, ...prev]);
-      setNewCampaign({
-        name: '',
-        description: '',
-        strategy: '',
-        personaId: '',
-        startDate: '',
-        endDate: '',
-        budget: '',
-      });
-      setIsCreateModalOpen(false);
+      setSelectedPersonaId('');
+      setIsGenerateModalOpen(false);
       
       toast({
-        title: "Campaign created",
-        description: `${response.data.name} has been created successfully.`,
+        title: "AI Campaign Generated!",
+        description: `"${response.data.name}" has been created successfully.`,
       });
     } catch (error) {
-      console.error('Create campaign error:', error);
+      console.error('Generate campaign error:', error);
       
-      let errorMessage = "Failed to create campaign. Please try again.";
+      let errorMessage = "Failed to generate campaign. Please try again.";
       
       if (error instanceof ApiError) {
         errorMessage = error.message;
@@ -164,7 +139,7 @@ export default function CampaignsPage() {
         variant: "destructive",
       });
     } finally {
-      setIsCreating(false);
+      setIsGenerating(false);
     }
   };
 
@@ -219,109 +194,72 @@ export default function CampaignsPage() {
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Campaigns</h1>
           <p className="text-muted-foreground">
-            Create, manage, and track your marketing campaigns across all channels.
+            AI-generated marketing campaigns tailored to your customer personas.
           </p>
         </div>
-        <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
+        <Dialog open={isGenerateModalOpen} onOpenChange={setIsGenerateModalOpen}>
           <DialogTrigger asChild>
             <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              Create Campaign
+              <Sparkles className="mr-2 h-4 w-4" />
+              Generate Campaign
             </Button>
           </DialogTrigger>
-          <DialogContent className="max-w-2xl">
+          <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create New Campaign</DialogTitle>
+              <DialogTitle className="flex items-center gap-2">
+                <Brain className="h-5 w-5" />
+                Generate AI Campaign
+              </DialogTitle>
               <DialogDescription>
-                Create a new marketing campaign. You can also generate campaigns automatically from your personas.
+                Select a persona to generate a targeted marketing campaign using AI.
               </DialogDescription>
             </DialogHeader>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="name">Campaign Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="Summer Product Launch"
-                    value={newCampaign.name}
-                    onChange={(e) => setNewCampaign(prev => ({ ...prev, name: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="persona">Target Persona</Label>
-                  <Select value={newCampaign.personaId} onValueChange={(value) => setNewCampaign(prev => ({ ...prev, personaId: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a persona" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {personas.map((persona) => (
-                        <SelectItem key={persona.id} value={persona.id}>
-                          {persona.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              </div>
-              
+            <div className="space-y-4 py-4">
               <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Describe the campaign objectives and target audience..."
-                  value={newCampaign.description}
-                  onChange={(e) => setNewCampaign(prev => ({ ...prev, description: e.target.value }))}
-                />
-              </div>
-              
-              <div>
-                <Label htmlFor="strategy">Strategy</Label>
-                <Textarea
-                  id="strategy"
-                  placeholder="Outline the marketing strategy, channels, messaging, and tactics..."
-                  value={newCampaign.strategy}
-                  onChange={(e) => setNewCampaign(prev => ({ ...prev, strategy: e.target.value }))}
-                  className="min-h-[100px]"
-                />
-              </div>
-              
-              <div className="grid grid-cols-3 gap-4">
-                <div>
-                  <Label htmlFor="budget">Budget (USD)</Label>
-                  <Input
-                    id="budget"
-                    type="number"
-                    placeholder="5000"
-                    value={newCampaign.budget}
-                    onChange={(e) => setNewCampaign(prev => ({ ...prev, budget: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="startDate">Start Date</Label>
-                  <Input
-                    id="startDate"
-                    type="date"
-                    value={newCampaign.startDate}
-                    onChange={(e) => setNewCampaign(prev => ({ ...prev, startDate: e.target.value }))}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="endDate">End Date</Label>
-                  <Input
-                    id="endDate"
-                    type="date"
-                    value={newCampaign.endDate}
-                    onChange={(e) => setNewCampaign(prev => ({ ...prev, endDate: e.target.value }))}
-                  />
-                </div>
+                <Label htmlFor="persona">Select Persona</Label>
+                <Select value={selectedPersonaId} onValueChange={setSelectedPersonaId}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Choose a persona to create a campaign for" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {personas.map((persona) => (
+                      <SelectItem key={persona.id} value={persona.id}>
+                        <div className="flex flex-col">
+                          <span className="font-medium">{persona.name}</span>
+                          <span className="text-xs text-muted-foreground line-clamp-1">
+                            {persona.description}
+                          </span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {personas.length === 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    No personas available. Create personas first to generate campaigns.
+                  </p>
+                )}
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setIsCreateModalOpen(false)}>
+              <Button variant="outline" onClick={() => setIsGenerateModalOpen(false)}>
                 Cancel
               </Button>
-              <Button onClick={handleCreateCampaign} disabled={isCreating}>
-                {isCreating ? "Creating..." : "Create Campaign"}
+              <Button 
+                onClick={handleGenerateCampaign} 
+                disabled={isGenerating || !selectedPersonaId}
+              >
+                {isGenerating ? (
+                  <>
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent mr-2" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Generate Campaign
+                  </>
+                )}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -337,7 +275,7 @@ export default function CampaignsPage() {
           <CardContent>
             <div className="text-2xl font-bold">{campaigns.length}</div>
             <p className="text-xs text-muted-foreground">
-              All campaigns created
+              AI-generated campaigns
             </p>
           </CardContent>
         </Card>
@@ -380,18 +318,21 @@ export default function CampaignsPage() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Create Campaign Card */}
+        {/* Generate Campaign Card */}
         <Card 
           className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 cursor-pointer transition-colors"
-          onClick={() => setIsCreateModalOpen(true)}
+          onClick={() => setIsGenerateModalOpen(true)}
         >
           <CardContent className="flex flex-col items-center justify-center p-8 text-center">
             <div className="rounded-full bg-muted p-4 mb-4">
-              <Plus className="h-8 w-8 text-muted-foreground" />
+              <Sparkles className="h-8 w-8 text-muted-foreground" />
             </div>
-            <h3 className="text-lg font-semibold mb-2">Create Campaign</h3>
+            <h3 className="text-lg font-semibold mb-2">Generate AI Campaign</h3>
             <p className="text-sm text-muted-foreground">
-              Create a new marketing campaign manually or generate one from your personas
+              {personas.length > 0 
+                ? "Create a targeted marketing campaign from your personas using AI"
+                : "Create personas first to generate campaigns"
+              }
             </p>
           </CardContent>
         </Card>
@@ -455,18 +396,23 @@ export default function CampaignsPage() {
       {campaigns.length === 0 && !isLoading && (
         <div className="text-center py-12">
           <div className="rounded-full bg-muted p-6 w-24 h-24 mx-auto mb-4 flex items-center justify-center">
-            <Target className="h-12 w-12 text-muted-foreground" />
+            <Brain className="h-12 w-12 text-muted-foreground" />
           </div>
           <h3 className="text-lg font-semibold mb-2">No campaigns yet</h3>
           <p className="text-muted-foreground mb-6 max-w-md mx-auto">
             {personas.length > 0 
-              ? "Create your first marketing campaign or generate one from your existing personas."
-              : "Create personas first, then generate targeted campaigns from them."
+              ? "Generate your first AI-powered marketing campaign from your existing personas."
+              : "Create personas first, then generate targeted campaigns from them using AI."
             }
           </p>
-          {personas.length === 0 && (
+          {personas.length === 0 ? (
             <Button variant="outline" asChild>
               <a href="/dashboard/personas">Create Personas</a>
+            </Button>
+          ) : (
+            <Button onClick={() => setIsGenerateModalOpen(true)}>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate First Campaign
             </Button>
           )}
         </div>
@@ -481,7 +427,7 @@ export default function CampaignsPage() {
               {selectedCampaign?.name}
             </DialogTitle>
             <DialogDescription>
-              Campaign details and strategy
+              AI-generated campaign details and strategy
             </DialogDescription>
           </DialogHeader>
           {selectedCampaign && (
@@ -521,8 +467,8 @@ export default function CampaignsPage() {
               </div>
               
               <div>
-                <Label className="text-sm font-medium">Strategy</Label>
-                <div className="mt-1 p-4 bg-muted rounded-md text-sm whitespace-pre-wrap">
+                <Label className="text-sm font-medium">AI-Generated Strategy</Label>
+                <div className="mt-1 p-4 bg-muted rounded-md text-sm whitespace-pre-wrap max-h-64 overflow-y-auto">
                   {selectedCampaign.strategy}
                 </div>
               </div>
@@ -556,11 +502,50 @@ export default function CampaignsPage() {
               Close
             </Button>
             <Button disabled>
-              Edit Campaign
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate Content
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {campaigns.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Brain className="h-5 w-5" />
+              AI Campaign Insights
+            </CardTitle>
+            <CardDescription>
+              Optimize your marketing campaigns with AI-powered recommendations
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              <div className="p-4 rounded-lg bg-muted">
+                <h4 className="font-medium mb-2">Generate More Campaigns</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Create additional targeted campaigns for your other personas to maximize reach.
+                </p>
+                <Button variant="outline" size="sm" onClick={() => setIsGenerateModalOpen(true)}>
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate Campaign
+                </Button>
+              </div>
+              
+              <div className="p-4 rounded-lg bg-muted">
+                <h4 className="font-medium mb-2">View Analytics</h4>
+                <p className="text-sm text-muted-foreground mb-3">
+                  Monitor your platform's user data to refine your campaign strategies.
+                </p>
+                <Button variant="outline" size="sm" asChild>
+                  <a href="/dashboard/analytics">View Analytics</a>
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

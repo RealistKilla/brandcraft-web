@@ -111,19 +111,6 @@ export const api = {
         method: 'POST',
         body: JSON.stringify(data),
       }),
-    create: (data: { 
-      name: string; 
-      description: string;
-      strategy: string;
-      personaId: string;
-      startDate?: string;
-      endDate?: string;
-      budget?: number;
-    }) =>
-      apiRequest('/campaigns', {
-        method: 'POST',
-        body: JSON.stringify(data),
-      }),
   },
   dashboard: {
     getOverview: () => apiRequest('/dashboard/overview'),
