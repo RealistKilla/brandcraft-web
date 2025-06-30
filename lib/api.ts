@@ -112,6 +112,19 @@ export const api = {
         body: JSON.stringify(data),
       }),
   },
+  content: {
+    getAll: () => apiRequest('/content'),
+    generate: (data: { 
+      campaignId: string; 
+      title: string; 
+      platforms: string[]; 
+      additionalContext?: string; 
+    }) =>
+      apiRequest('/generate-content', {
+        method: 'POST',
+        body: JSON.stringify(data),
+      }),
+  },
   dashboard: {
     getOverview: () => apiRequest('/dashboard/overview'),
   },
