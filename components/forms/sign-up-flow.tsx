@@ -18,6 +18,7 @@ import { api, ApiError } from "@/lib/api";
 import { useRouter } from "next/navigation";
 import { Building2, User, ArrowLeft } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useAuth } from "@/components/providers/auth-provider";
 
 const accountTypeSchema = z.object({
   accountType: z.enum(["individual", "organization"]),
@@ -43,6 +44,7 @@ export function SignUpFlow() {
   const [accountType, setAccountType] = useState<"individual" | "organization" | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   const accountTypeForm = useForm<AccountTypeData>({
     resolver: zodResolver(accountTypeSchema),
@@ -85,6 +87,8 @@ export function SignUpFlow() {
         description: "Your account has been created successfully!",
       });
       
+      // Refresh user data to update auth state
+      await refreshUser();
       router.push("/dashboard");
     } catch (error) {
       console.error("Sign up error:", error);

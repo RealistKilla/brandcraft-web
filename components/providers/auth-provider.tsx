@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState, ReactNode } from "react";
-import Cookies from "js-cookie";
+import { useRouter, usePathname } from "next/navigation";
 import { api } from "@/lib/api";
 
 interface User {
@@ -42,23 +42,20 @@ export const useAuth = () => {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const pathname = usePathname();
 
   const refreshUser = async () => {
-    // Check if auth token cookie exists before making API call
-    const authToken = Cookies.get('auth-token');
-    if (!authToken) {
-      setUser(null);
-      setLoading(false);
-      return;
-    }
-
     try {
       const response = await api.auth.getUser();
       setUser(response.user);
+      
+      // Redirect to dashboard if user is authenticated and on auth pages
+      if (response.user && (pathname === '/auth/signin' || pathname === '/auth/signup')) {
+        router.push('/dashboard');
+      }
     } catch (error) {
       console.error("Failed to fetch user:", error);
-      // Clear the auth token cookie if the session is invalid
-      Cookies.remove('auth-token');
       setUser(null);
     } finally {
       setLoading(false);
@@ -67,7 +64,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     refreshUser();
-  }, []);
+  }, [pathname]);
 
   return (
     <AuthContext.Provider value={{ user, setUser, loading, refreshUser }}>

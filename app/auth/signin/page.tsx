@@ -1,13 +1,35 @@
 import { Metadata } from "next";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { SignInForm } from "@/components/forms/sign-in-form";
-
-export const metadata: Metadata = {
-  title: "Sign In",
-  description: "Sign in to your account",
-};
+import { useAuth } from "@/components/providers/auth-provider";
 
 export default function SignInPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, loading, router]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (user) {
+    return null; // Will redirect via useEffect
+  }
+
   return (
     <div className="min-h-screen flex">
       {/* Left side - City illustration - 67% on desktop, hidden on mobile */}
@@ -73,4 +95,5 @@ export default function SignInPage() {
       </div>
     </div>
   );
+"use client";
 }

@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { api, ApiError } from "@/lib/api";
+import { useAuth } from "@/components/providers/auth-provider";
 
 const formSchema = z.object({
   email: z.string().email({
@@ -29,6 +30,7 @@ const formSchema = z.object({
 export function SignInForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -52,6 +54,8 @@ export function SignInForm() {
         description: "Welcome back!",
       });
       
+      // Refresh user data to update auth state
+      await refreshUser();
       router.push("/dashboard");
     } catch (error) {
       console.error("Sign in error:", error);

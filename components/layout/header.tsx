@@ -90,22 +90,23 @@ export function Header() {
 
         <div className="flex items-center space-x-2">
           <ModeToggle />
-          {!loading && (
+          {loading ? (
+            <div className="hidden md:flex items-center space-x-2">
+              <div className="h-9 w-20 bg-muted animate-pulse rounded-md"></div>
+              <div className="h-9 w-20 bg-muted animate-pulse rounded-md"></div>
+            </div>
+          ) : user ? (
+            <Button asChild className="hidden md:flex">
+              <Link href="/dashboard">Dashboard</Link>
+            </Button>
+          ) : (
             <>
-              {user ? (
-                <Button asChild className="hidden md:flex">
-                  <Link href="/dashboard">Dashboard</Link>
-                </Button>
-              ) : (
-                <>
-                  <Button variant="outline" asChild className="hidden md:flex">
-                    <Link href="/auth/signin">Sign In</Link>
-                  </Button>
-                  <Button asChild className="hidden md:flex">
-                    <Link href="/auth/signup">Sign Up</Link>
-                  </Button>
-                </>
-              )}
+              <Button variant="outline" asChild className="hidden md:flex">
+                <Link href="/auth/signin">Sign In</Link>
+              </Button>
+              <Button asChild className="hidden md:flex">
+                <Link href="/auth/signup">Sign Up</Link>
+              </Button>
             </>
           )}
           <Button
@@ -152,22 +153,23 @@ export function Header() {
                 ))}
               </nav>
               <div className="flex flex-col space-y-2 mt-4 pt-4 border-t">
-                {!loading && (
+                {loading ? (
+                  <div className="space-y-2">
+                    <div className="h-9 w-full bg-muted animate-pulse rounded-md"></div>
+                    <div className="h-9 w-full bg-muted animate-pulse rounded-md"></div>
+                  </div>
+                ) : user ? (
+                  <Button asChild>
+                    <Link href="/dashboard">Dashboard</Link>
+                  </Button>
+                ) : (
                   <>
-                    {user ? (
-                      <Button asChild>
-                        <Link href="/dashboard">Dashboard</Link>
-                      </Button>
-                    ) : (
-                      <>
-                        <Button variant="outline" asChild>
-                          <Link href="/auth/signin">Sign In</Link>
-                        </Button>
-                        <Button asChild>
-                          <Link href="/auth/signup">Sign Up</Link>
-                        </Button>
-                      </>
-                    )}
+                    <Button variant="outline" asChild>
+                      <Link href="/auth/signin">Sign In</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link href="/auth/signup">Sign Up</Link>
+                    </Button>
                   </>
                 )}
               </div>
