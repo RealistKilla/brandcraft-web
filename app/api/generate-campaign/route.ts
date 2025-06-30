@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
         3. Uses appropriate channels and messaging tone
         4. Includes specific tactics and timeline
         5. Suggests a realistic budget range
-        6. Please adhere to a date structure that is compatible with Node JS Date objects.
+        6. Please adhere to a date structure that is compatible with Node JS Date objects THIS IS EXTREMELY IMPORTANT (e.g. 2024-01-15T00:00:00.000Z).
 
         The strategy should be detailed and actionable, including:
         - Target channels (based on their preferences)
@@ -128,6 +128,8 @@ export async function POST(request: NextRequest) {
       `,
     });
 
+    console.log("start date", result.object.startDate);
+    console.log("end date", result.object.endDate);
     // Save the generated campaign to the database
     const savedCampaign = await prisma.campaign.create({
       data: {
