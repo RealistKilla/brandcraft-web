@@ -54,18 +54,18 @@ export function Hero() {
               className="h-12 px-8 font-medium rounded-full font-heading"
               asChild
             >
-              <Link href="/auth/signup">
-                Get Started <ArrowRight className="ml-2 h-4 w-4" />
+              <Link href="/waitlist">
+                Join Waitlist <ArrowRight className="ml-2 h-4 w-4" />
               </Link>
             </Button>
-            <Button
+            {/* <Button
               variant="outline"
               size="lg"
               className="h-12 px-8 font-medium rounded-full font-heading"
               asChild
             >
               <Link href="/features">Watch Demo</Link>
-            </Button>
+            </Button> */}
           </motion.div>
 
           <motion.div

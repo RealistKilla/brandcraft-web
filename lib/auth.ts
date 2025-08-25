@@ -16,6 +16,19 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
 
+export async function addToWaitlist(email: string) {
+  // Check if email already exists in waitlist
+  const existingEntry = await prisma.waitlist.findUnique({
+    where: { email },
+  });
+  if (existingEntry) {
+    throw new Error("Email is already in the waitlist");
+  }
+  return prisma.waitlist.create({
+    data: { email },
+  });
+}
+
 export async function verifyPassword(
   password: string,
   hashedPassword: string
@@ -78,7 +91,9 @@ export async function createUser(
   if (accountType === "organization") {
     // Creating a new organization
     if (!organizationName) {
-      throw new Error("Organization name is required for organization accounts");
+      throw new Error(
+        "Organization name is required for organization accounts"
+      );
     }
 
     organization = await prisma.organization.create({
@@ -95,13 +110,15 @@ export async function createUser(
         where: {
           name: {
             equals: existingOrganization,
-            mode: 'insensitive', // Case-insensitive comparison
+            mode: "insensitive", // Case-insensitive comparison
           },
         },
       });
 
       if (!existingOrg) {
-        throw new Error(`Organization "${existingOrganization}" does not exist. Please check the name or contact your organization administrator.`);
+        throw new Error(
+          `Organization "${existingOrganization}" does not exist. Please check the name or contact your organization administrator.`
+        );
       }
 
       organization = existingOrg;

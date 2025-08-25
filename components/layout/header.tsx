@@ -42,10 +42,14 @@ export function Header() {
     setIsMenuOpen(false);
   }, [pathname]);
 
+  const isWebsitePath = ["/", "/features", "/solutions", "/pricing"].includes(
+    pathname
+  );
+
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full transition-all duration-300",
+        "sticky top-0 z-50 w-screen transition-all duration-300",
         isScrolled
           ? "bg-background/95 backdrop-blur-md border-b shadow-sm"
           : "bg-background"
@@ -91,23 +95,9 @@ export function Header() {
         <div className="flex items-center space-x-2">
           <ModeToggle />
           {loading ? (
-            <div className="hidden md:flex items-center space-x-2">
-              <div className="h-9 w-20 bg-muted animate-pulse rounded-md"></div>
-              <div className="h-9 w-20 bg-muted animate-pulse rounded-md"></div>
-            </div>
-          ) : user ? (
-            <Button asChild className="hidden md:flex">
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
+            <ActionsLoader />
           ) : (
-            <>
-              <Button variant="outline" asChild className="hidden md:flex">
-                <Link href="/auth/signin">Sign In</Link>
-              </Button>
-              <Button asChild className="hidden md:flex">
-                <Link href="/auth/signup">Sign Up</Link>
-              </Button>
-            </>
+            isWebsitePath && <ActionButtons user={user} />
           )}
           <Button
             variant="outline"
@@ -154,23 +144,9 @@ export function Header() {
               </nav>
               <div className="flex flex-col space-y-2 mt-4 pt-4 border-t">
                 {loading ? (
-                  <div className="space-y-2">
-                    <div className="h-9 w-full bg-muted animate-pulse rounded-md"></div>
-                    <div className="h-9 w-full bg-muted animate-pulse rounded-md"></div>
-                  </div>
-                ) : user ? (
-                  <Button asChild>
-                    <Link href="/dashboard">Dashboard</Link>
-                  </Button>
+                  <ActionsLoader />
                 ) : (
-                  <>
-                    <Button variant="outline" asChild>
-                      <Link href="/auth/signin">Sign In</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href="/auth/signup">Sign Up</Link>
-                    </Button>
-                  </>
+                  isWebsitePath && <ActionButtons user={user} />
                 )}
               </div>
             </div>
@@ -180,3 +156,38 @@ export function Header() {
     </header>
   );
 }
+
+const ActionButtons = ({ user }: { user: any }) => {
+  return (
+    <Button asChild>
+      <Link href="/waitlist">Join Waitlist</Link>
+    </Button>
+  );
+  // if (user) {
+  //   return (
+  //     <Button asChild>
+  //       <Link href="/dashboard">Dashboard</Link>
+  //     </Button>
+  //   );
+  // } else {
+  //   return (
+  //     <>
+  //       <Button variant="outline" asChild>
+  //         <Link href="/auth/signin">Sign In</Link>
+  //       </Button>
+  //       <Button asChild>
+  //         <Link href="/auth/signup">Sign Up</Link>
+  //       </Button>
+  //     </>
+  //   );
+  // }
+};
+
+const ActionsLoader = () => {
+  return (
+    <div className="space-y-2">
+      <div className="h-9 w-full bg-muted animate-pulse rounded-md"></div>
+      <div className="h-9 w-full bg-muted animate-pulse rounded-md"></div>
+    </div>
+  );
+};
