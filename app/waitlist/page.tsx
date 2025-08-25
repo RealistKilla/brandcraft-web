@@ -5,8 +5,8 @@ import WaitlistForm from "@/components/forms/waitlist-form";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Sign In",
-  description: "Sign in to your account",
+  title: "Waitlist",
+  description: "Join the waitlist for early access",
 };
 
 export default async function WaitlistPage() {

@@ -20,8 +20,6 @@ const formSchema = z.object({
 
 const WaitlistForm = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const router = useRouter();
-  const { refreshUser } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -44,7 +42,7 @@ const WaitlistForm = () => {
       });
       form.reset();
     } catch (error) {
-      console.error("Sign in error:", error);
+      console.error("Join waitlist error:", error);
 
       toast({
         title: "Error",
