@@ -1,40 +1,48 @@
-import { Metadata } from 'next';
+import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: 'About',
-  description: 'Learn more about our company and mission',
+  title: "About",
+  description: "Learn more about our company and mission",
 };
 
 export default function AboutPage() {
   return (
-    <div className="container max-w-4xl mx-auto py-12 px-4 md:px-6">
-      <h1 className="text-4xl font-bold tracking-tight mb-6">About Us</h1>
-      
-      <div className="prose prose-lg dark:prose-invert">
-        <p className="text-lg text-muted-foreground mb-6">
-          We're a team of passionate developers and designers building the next generation of web applications.
-        </p>
-        
-        <h2 className="text-2xl font-semibold mt-8 mb-4">Our Mission</h2>
-        <p className="mb-6">
-          Our mission is to create beautiful, accessible, and performant web applications
-          that provide incredible user experiences. We believe in the power of the web
-          as a platform and strive to push its boundaries.
-        </p>
-        
-        <h2 className="text-2xl font-semibold mt-8 mb-4">Our Team</h2>
-        <p className="mb-6">
-          Our diverse team brings together expertise from various disciplines including
-          design, engineering, and product management. We collaborate closely to ensure
-          that every aspect of our products meets the highest standards.
-        </p>
-        
-        <h2 className="text-2xl font-semibold mt-8 mb-4">Our Technology</h2>
-        <p className="mb-6">
-          We leverage cutting-edge technologies like Next.js, React, and TypeScript
-          to build fast, reliable, and maintainable applications. Our approach prioritizes
-          performance, accessibility, and user experience.
-        </p>
+    <div className="container max-w-3xl mx-auto py-16 px-6 text-center">
+      <h1 className="text-5xl font-bold tracking-tight mb-6">
+        About <span className="text-primary">brandcraft</span>
+      </h1>
+      <p className="text-lg text-muted-foreground mb-10">
+        <span className="text-primary">brandcraft</span> is the AI marketing
+        platform that turns customer data into ready-to-launch personas,
+        strategies, and content—helping teams market smarter, faster, and with
+        more impact.
+      </p>
+
+      <div className="grid gap-10 md:grid-cols-3 text-left">
+        <div>
+          <h2 className="text-xl font-semibold mb-3">Our Mission</h2>
+          <p className="text-muted-foreground">
+            Empower marketers to unlock the full potential of their data with
+            AI, bridging the gap between insights and creativity.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-3">Our Team</h2>
+          <p className="text-muted-foreground">
+            A group of builders, strategists, and creatives driven to make
+            data-driven marketing effortless, scalable, and human.
+          </p>
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold mb-3">Our Technology</h2>
+          <p className="text-muted-foreground">
+            Combining AI, automation, and intuitive design,{" "}
+            <span className="text-primary">brandcraft</span> helps teams create
+            campaigns that resonate—at the speed of digital.
+          </p>
+        </div>
       </div>
     </div>
   );
