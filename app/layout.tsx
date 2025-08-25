@@ -67,7 +67,9 @@ export default function RootLayout({
         >
           <AuthProvider>
             <Header />
-            <main className="min-h-screen w-screen">{children}</main>
+            <main className="min-h-screen w-screen flex flex-col items-center ">
+              {children}
+            </main>
             <Footer />
             <Toaster />
           </AuthProvider>

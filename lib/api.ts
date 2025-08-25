@@ -9,7 +9,7 @@ interface ApiResponse<T = any> {
 class ApiError extends Error {
   constructor(public status: number, message: string) {
     super(message);
-    this.name = 'ApiError';
+    this.name = "ApiError";
   }
 }
 
@@ -18,13 +18,13 @@ async function apiRequest<T = any>(
   options: RequestInit = {}
 ): Promise<ApiResponse<T>> {
   const url = `/api${endpoint}`;
-  
+
   const config: RequestInit = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     },
-    credentials: 'include',
+    credentials: "include",
     ...options,
   };
 
@@ -33,7 +33,7 @@ async function apiRequest<T = any>(
     const data = await response.json();
 
     if (!response.ok) {
-      throw new ApiError(response.status, data.message || 'An error occurred');
+      throw new ApiError(response.status, data.message || "An error occurred");
     }
 
     return data;
@@ -41,92 +41,99 @@ async function apiRequest<T = any>(
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(500, 'Network error occurred');
+    throw new ApiError(500, "Network error occurred");
   }
 }
 
 export const api = {
+  waitlist: {
+    join: (data: { email: string }) =>
+      apiRequest("/waitlist", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+  },
   auth: {
-    signUp: (data: { 
-      name: string; 
-      email: string; 
+    signUp: (data: {
+      name: string;
+      email: string;
       password: string;
       accountType: string;
       organizationName?: string;
       existingOrganization?: string;
     }) =>
-      apiRequest('/auth/signup', {
-        method: 'POST',
+      apiRequest("/auth/signup", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
-    
+
     signIn: (data: { email: string; password: string }) =>
-      apiRequest('/auth/signin', {
-        method: 'POST',
+      apiRequest("/auth/signin", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
-    
+
     signOut: () =>
-      apiRequest('/auth/signout', {
-        method: 'POST',
+      apiRequest("/auth/signout", {
+        method: "POST",
       }),
-    
-    getUser: () => apiRequest('/auth/me'),
+
+    getUser: () => apiRequest("/auth/me"),
   },
   applications: {
-    getAll: () => apiRequest('/applications'),
+    getAll: () => apiRequest("/applications"),
     create: (data: { name: string }) =>
-      apiRequest('/applications', {
-        method: 'POST',
+      apiRequest("/applications", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
   },
   analytics: {
-    getData: (applicationId: string) => 
+    getData: (applicationId: string) =>
       apiRequest(`/analytics?applicationId=${applicationId}`),
   },
   personas: {
-    getAll: () => apiRequest('/personas'),
+    getAll: () => apiRequest("/personas"),
     generate: (data: { applicationId: string; filters?: any }) =>
-      apiRequest('/generate-persona', {
-        method: 'POST',
+      apiRequest("/generate-persona", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
-    create: (data: { 
-      name: string; 
+    create: (data: {
+      name: string;
       description: string;
       demographics: any;
       behaviors: any;
       preferences: any;
     }) =>
-      apiRequest('/personas', {
-        method: 'POST',
+      apiRequest("/personas", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
   },
   campaigns: {
-    getAll: () => apiRequest('/campaigns'),
+    getAll: () => apiRequest("/campaigns"),
     generate: (data: { personaId: string }) =>
-      apiRequest('/generate-campaign', {
-        method: 'POST',
+      apiRequest("/generate-campaign", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
   },
   content: {
-    getAll: () => apiRequest('/content'),
-    generate: (data: { 
-      campaignId: string; 
-      title: string; 
-      platforms: string[]; 
-      additionalContext?: string; 
+    getAll: () => apiRequest("/content"),
+    generate: (data: {
+      campaignId: string;
+      title: string;
+      platforms: string[];
+      additionalContext?: string;
     }) =>
-      apiRequest('/generate-content', {
-        method: 'POST',
+      apiRequest("/generate-content", {
+        method: "POST",
         body: JSON.stringify(data),
       }),
   },
   dashboard: {
-    getOverview: () => apiRequest('/dashboard/overview'),
+    getOverview: () => apiRequest("/dashboard/overview"),
   },
 };
 
