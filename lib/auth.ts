@@ -16,19 +16,6 @@ export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 12);
 }
 
-export async function addToWaitlist(email: string) {
-  // Check if email already exists in waitlist
-  const existingEntry = await prisma.waitlist.findUnique({
-    where: { email },
-  });
-  if (existingEntry) {
-    throw new Error("Email is already in the waitlist");
-  }
-  return prisma.waitlist.create({
-    data: { email },
-  });
-}
-
 export async function verifyPassword(
   password: string,
   hashedPassword: string

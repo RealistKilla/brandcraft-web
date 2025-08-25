@@ -37,11 +37,12 @@ async function apiRequest<T = any>(
     }
 
     return data;
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof ApiError) {
       throw error;
     }
-    throw new ApiError(500, "Network error occurred");
+    console.log("API request error:", error.message);
+    throw new ApiError(500, JSON.parse(error?.message));
   }
 }
 
