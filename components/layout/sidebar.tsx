@@ -4,16 +4,16 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { 
-  LayoutDashboard, 
-  BarChart, 
-  Settings, 
-  Users, 
-  FileText, 
+import {
+  LayoutDashboard,
+  BarChart,
+  Settings,
+  Users,
+  FileText,
   Target,
   Grid3X3,
   LogOut,
-  User as UserIcon
+  User as UserIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -78,12 +78,12 @@ export function Sidebar() {
     try {
       await api.auth.signOut();
       setUser(null);
-      
+
       toast({
         title: "Signed out",
         description: "You have been signed out successfully.",
       });
-      
+
       router.push("/");
     } catch (error) {
       console.error("Sign out error:", error);
@@ -102,12 +102,7 @@ export function Sidebar() {
   }
 
   return (
-    <div className="hidden md:flex h-screen border-r flex-col w-64">
-      <div className="p-6">
-        <Link href="/\" className="flex items-center space-x-2">
-          <span className="font-bold text-xl">Next.js 15</span>
-        </Link>
-      </div>
+    <div className="hidden md:flex h-screen border-r flex-col w-48">
       <ScrollArea className="flex-1 px-4">
         <div className="space-y-1 py-2">
           {sidebarItems.map((item) => (
@@ -119,7 +114,7 @@ export function Sidebar() {
                 "w-full justify-start",
                 pathname === item.href
                   ? "bg-secondary text-secondary-foreground"
-                  : "hover:bg-transparent hover:text-primary"
+                  : "hover:bg-transparent hover:text-primary",
               )}
             >
               <Link href={item.href}>
@@ -134,21 +129,21 @@ export function Sidebar() {
         <div className="flex items-center gap-3 mb-4 p-2">
           <Avatar className="h-8 w-8">
             <AvatarFallback>
-              {user.name?.charAt(0)?.toUpperCase() || 'U'}
+              {user.name?.charAt(0)?.toUpperCase() || "U"}
             </AvatarFallback>
           </Avatar>
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">
-              {user.name || 'User'}
+              {user.name || "User"}
             </p>
             <p className="text-xs text-muted-foreground truncate">
               {user.email}
             </p>
           </div>
         </div>
-        <Button 
-          variant="outline" 
-          className="w-full justify-start" 
+        <Button
+          variant="outline"
+          className="w-full justify-start"
           onClick={handleSignOut}
           disabled={isSigningOut}
         >
@@ -159,8 +154,8 @@ export function Sidebar() {
             </>
           ) : (
             <>
-            <LogOut className="mr-2 h-4 w-4" />
-            Sign Out
+              <LogOut className="mr-2 h-4 w-4" />
+              Sign Out
             </>
           )}
         </Button>

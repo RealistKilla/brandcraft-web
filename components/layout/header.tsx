@@ -9,6 +9,7 @@ import { ModeToggle } from "@/components/mode-toggle";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/components/providers/auth-provider";
+import Image from "next/image";
 
 interface NavItem {
   label: string;
@@ -43,7 +44,7 @@ export function Header() {
   }, [pathname]);
 
   const isWebsitePath = ["/", "/features", "/solutions", "/pricing"].includes(
-    pathname
+    pathname,
   );
 
   return (
@@ -52,18 +53,22 @@ export function Header() {
         "sticky top-0 z-50 w-screen transition-all duration-300",
         isScrolled
           ? "bg-background/95 backdrop-blur-md border-b shadow-sm"
-          : "bg-background"
+          : "bg-background",
       )}
     >
       <div className="container flex h-16 items-center justify-between">
         <div className="pl-4 flex items-center">
           <Link href="/" className="flex items-center gap-2">
             <div className="flex items-center gap-2 md:gap-3 mr-4 h-8">
-              <img
-                src="/logos/logo-dark.svg"
-                alt="Logo"
-                className="h-full w-auto object-contain"
-              />
+              <div className="relative h-full w-[200px]">
+                <Image
+                  fill
+                  objectFit="contain"
+                  src="/logos/logo-dark.svg"
+                  alt="Logo"
+                  className="h-full w-auto object-contain"
+                />
+              </div>
             </div>
           </Link>
         </div>
@@ -78,7 +83,7 @@ export function Header() {
                 "text-sm font-medium transition-colors hover:text-primary relative py-2",
                 pathname === item.href
                   ? "text-primary"
-                  : "text-muted-foreground"
+                  : "text-muted-foreground",
               )}
             >
               {item.label}
@@ -135,7 +140,7 @@ export function Header() {
                       "text-sm font-medium transition-colors hover:text-primary p-2 rounded-md",
                       pathname === item.href
                         ? "bg-muted text-primary"
-                        : "text-muted-foreground"
+                        : "text-muted-foreground",
                     )}
                   >
                     {item.label}
@@ -158,29 +163,29 @@ export function Header() {
 }
 
 const ActionButtons = ({ user }: { user: any }) => {
-  return (
-    <Button asChild>
-      <Link href="/waitlist">Join Waitlist</Link>
-    </Button>
-  );
-  // if (user) {
-  //   return (
-  //     <Button asChild>
-  //       <Link href="/dashboard">Dashboard</Link>
-  //     </Button>
-  //   );
-  // } else {
-  //   return (
-  //     <>
-  //       <Button variant="outline" asChild>
-  //         <Link href="/auth/signin">Sign In</Link>
-  //       </Button>
-  //       <Button asChild>
-  //         <Link href="/auth/signup">Sign Up</Link>
-  //       </Button>
-  //     </>
-  //   );
-  // }
+  // return (
+  //   <Button asChild>
+  //     <Link href="/waitlist">Join Waitlist</Link>
+  //   </Button>
+  // );
+  if (user) {
+    return (
+      <Button asChild>
+        <Link href="/dashboard">Dashboard</Link>
+      </Button>
+    );
+  } else {
+    return (
+      <>
+        <Button variant="outline" asChild>
+          <Link href="/auth/signin">Sign In</Link>
+        </Button>
+        <Button asChild>
+          <Link href="/auth/signup">Sign Up</Link>
+        </Button>
+      </>
+    );
+  }
 };
 
 const ActionsLoader = () => {

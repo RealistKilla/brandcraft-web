@@ -11,11 +11,11 @@ export function middleware(request: NextRequest) {
     pathname !== "/favicon.ico" &&
     pathname !== "/"
   ) {
-    if (pathname.startsWith("/auth") || pathname.startsWith("/dashboard")) {
-      const url = request.nextUrl.clone();
-      url.pathname = "/waitlist";
-      return NextResponse.redirect(url);
-    }
+    // if (pathname.startsWith("/auth") || pathname.startsWith("/dashboard")) {
+    //   const url = request.nextUrl.clone();
+    //   url.pathname = "/waitlist";
+    //   return NextResponse.redirect(url);
+    // }
 
     return NextResponse.next();
   }

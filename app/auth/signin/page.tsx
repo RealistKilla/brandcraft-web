@@ -19,7 +19,7 @@ export default async function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen flex">
+    <div className="min-h-screen flex w-full">
       {/* Left side - City illustration - 67% on desktop, hidden on mobile */}
       <div className="hidden lg:flex lg:w-2/3 bg-gradient-to-br from-gray-900 to-black relative overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
